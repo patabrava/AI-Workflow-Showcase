@@ -8,6 +8,10 @@
     <!-- Fonts: Fraunces (display) + Work Sans (body) -->
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>Chart.defaults.animation = false;</script>
+
     <style>
         /* ===========================================
            CSS CUSTOM PROPERTIES (VINTAGE EDITORIAL)
@@ -188,6 +192,25 @@
         .incantation-list li { font-family: 'JetBrains Mono', monospace; font-size: clamp(0.55rem, 0.9vw, 0.75rem); color: rgba(245, 243, 238, 0.85); background: rgba(245, 243, 238, 0.06); border: 1px solid rgba(245, 243, 238, 0.12); padding: clamp(0.25rem, 0.4vh, 0.4rem) clamp(0.5rem, 0.8vw, 0.8rem); border-radius: 4px; line-height: 1.4; }
         .incantation-label { font-family: var(--font-body); font-size: var(--small-size); font-weight: 600; color: var(--accent-warm); text-transform: uppercase; letter-spacing: 0.15em; margin-top: var(--content-gap); }
 
+        /* === GAUGE RINGS (Slide 2) === */
+        .gauge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 3vw, 3rem); text-align: center; margin-top: var(--content-gap); align-items: start; }
+        @media (max-width: 600px) { .gauge-grid { grid-template-columns: 1fr; } }
+        .gauge-item { display: flex; flex-direction: column; align-items: center; }
+        .gauge-ring { position: relative; width: clamp(100px, 14vw, 180px); height: clamp(100px, 14vw, 180px); }
+        .gauge-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .gauge-ring .gauge-bg { fill: none; stroke: rgba(26, 26, 26, 0.08); stroke-width: 6; }
+        .gauge-ring .gauge-fill { fill: none; stroke: var(--accent-terracotta); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 1.5s var(--ease-out-expo); }
+        .gauge-value { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: var(--font-display); font-size: clamp(1.6rem, 3.5vw, 3rem); font-weight: 900; color: var(--text-primary); line-height: 1; }
+        .gauge-label { font-size: var(--body-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vh, 1rem); max-width: 200px; }
+
+        /* === GLASSWING CHARTS (Slide 4) === */
+        .glasswing-chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 3vw, 3rem); margin-top: var(--content-gap); align-items: start; }
+        @media (max-width: 700px) { .glasswing-chart-grid { grid-template-columns: 1fr; } }
+        .chart-card { border: 2px solid rgba(245, 243, 238, 0.15); padding: clamp(1rem, 2vw, 1.5rem); position: relative; }
+        .chart-card::before { content: attr(data-label); position: absolute; top: calc(-1 * clamp(0.4rem, 0.7vw, 0.6rem)); left: clamp(0.8rem, 2vw, 1.5rem); background: var(--bg-dark); padding: 0 clamp(0.3rem, 0.5vw, 0.5rem); font-size: var(--small-size); font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent-warm); }
+        .chart-container-editorial { height: clamp(160px, 22vh, 280px); position: relative; }
+        .chart-insight { font-family: var(--font-display); font-size: var(--body-size); color: rgba(245, 243, 238, 0.6); font-style: italic; margin-top: clamp(0.5rem, 1vh, 0.8rem); }
+
         /* === SHORTCUT TABLE === */
         .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: var(--content-gap); }
         @media (max-width: 700px) { .shortcut-grid { grid-template-columns: 1fr; } }
@@ -246,23 +269,41 @@
     <!-- ===========================================
          FOLIE 2: DIE ZAHLEN
          =========================================== -->
-    <section class="slide" data-slide="2">
+    <section class="slide" data-slide="2" id="slideGauges">
         <div class="geo-circle" style="bottom: clamp(3rem, 8vh, 7rem); right: clamp(2rem, 5vw, 5rem); width: clamp(50px, 7vw, 100px); height: clamp(50px, 7vw, 100px);"></div>
         <div class="slide-content">
             <p class="eyebrow reveal">Status Quo</p>
             <h2 class="reveal">KI schreibt bereits<br><em style="font-weight: 400;">die H&auml;lfte des Codes</em></h2>
-            <div class="stat-grid reveal">
-                <div>
-                    <div class="stat-number">51%</div>
-                    <div class="stat-label">des GitHub-Codes ist KI-generiert oder KI-unterst&uuml;tzt</div>
+            <div class="gauge-grid reveal">
+                <div class="gauge-item">
+                    <div class="gauge-ring">
+                        <svg viewBox="0 0 100 100" role="img" aria-label="51% des GitHub-Codes ist KI-generiert">
+                            <circle class="gauge-bg" cx="50" cy="50" r="45"/>
+                            <circle class="gauge-fill" id="gauge1" cx="50" cy="50" r="45" data-percent="51"/>
+                        </svg>
+                        <span class="gauge-value" data-count="51" data-suffix="%">0%</span>
+                    </div>
+                    <div class="gauge-label">des GitHub-Codes ist KI-generiert oder KI-unterst&uuml;tzt</div>
                 </div>
-                <div>
-                    <div class="stat-number">275M</div>
-                    <div class="stat-label">Commits pro Woche auf GitHub</div>
+                <div class="gauge-item">
+                    <div class="gauge-ring">
+                        <svg viewBox="0 0 100 100" role="img" aria-label="275 Millionen Commits pro Woche">
+                            <circle class="gauge-bg" cx="50" cy="50" r="45"/>
+                            <circle class="gauge-fill" id="gauge2" cx="50" cy="50" r="45" data-percent="85" style="stroke: var(--accent-warm);"/>
+                        </svg>
+                        <span class="gauge-value" style="font-size: clamp(1.2rem, 2.8vw, 2.2rem);" data-count="275" data-suffix="M">0M</span>
+                    </div>
+                    <div class="gauge-label">Commits pro Woche auf GitHub</div>
                 </div>
-                <div>
-                    <div class="stat-number">60%</div>
-                    <div class="stat-label">mehr PRs gemergt von t&auml;glichen KI-Nutzern</div>
+                <div class="gauge-item">
+                    <div class="gauge-ring">
+                        <svg viewBox="0 0 100 100" role="img" aria-label="60% mehr PRs von KI-Nutzern">
+                            <circle class="gauge-bg" cx="50" cy="50" r="45"/>
+                            <circle class="gauge-fill" id="gauge3" cx="50" cy="50" r="45" data-percent="60"/>
+                        </svg>
+                        <span class="gauge-value" data-count="60" data-suffix="%">0%</span>
+                    </div>
+                    <div class="gauge-label">mehr PRs gemergt von t&auml;glichen KI-Nutzern</div>
                 </div>
             </div>
         </div>
@@ -293,30 +334,26 @@
     <!-- ===========================================
          FOLIE 4: PROJECT GLASSWING
          =========================================== -->
-    <section class="slide slide-divider" data-slide="4">
+    <section class="slide slide-divider" data-slide="4" id="slideGlasswing">
         <div class="geo-circle" style="top: clamp(3rem, 10vh, 8rem); right: clamp(3rem, 8vw, 8rem); width: clamp(60px, 9vw, 130px); height: clamp(60px, 9vw, 130px);"></div>
         <div class="slide-content">
             <p class="eyebrow reveal">April 2026</p>
             <h2 class="reveal">Project Glasswing</h2>
-            <hr class="editorial-hr reveal">
-            <ul class="editorial-list reveal">
-                <li>
-                    <span class="list-marker">1</span>
-                    <span>Claude Mythos Preview hat <strong>Tausende Zero-Day-Schwachstellen</strong> in allen gro&szlig;en Betriebssystemen und Browsern gefunden</span>
-                </li>
-                <li>
-                    <span class="list-marker">2</span>
-                    <span>Darunter ein <strong>27 Jahre alter Bug</strong> in OpenBSD und eine <strong>16 Jahre alte L&uuml;cke</strong> in FFmpeg</span>
-                </li>
-                <li>
-                    <span class="list-marker">3</span>
-                    <span>Das UK AI Security Institute best&auml;tigt: <strong>73% Erfolgsquote</strong> bei CTF-Aufgaben auf Expertenniveau</span>
-                </li>
-                <li>
-                    <span class="list-marker">4</span>
-                    <span>Nicht &ouml;ffentlich verf&uuml;gbar, nur f&uuml;r Launch-Partner: AWS, Apple, Google, Microsoft</span>
-                </li>
-            </ul>
+            <div class="glasswing-chart-grid reveal">
+                <div class="chart-card" data-label="Verborgene Bugs">
+                    <div class="chart-container-editorial" role="img" aria-label="Balkendiagramm zeigt 27 Jahre alte OpenBSD-Schwachstelle und 16 Jahre alte FFmpeg-Schwachstelle">
+                        <canvas id="bugAgeChart"></canvas>
+                    </div>
+                    <p class="chart-insight">Claude fand, was Menschen jahrzehntelang &uuml;bersahen</p>
+                </div>
+                <div class="chart-card" data-label="CTF-Erfolgsquote">
+                    <div class="chart-container-editorial" role="img" aria-label="Kreisdiagramm zeigt 73% Erfolgsquote bei CTF-Aufgaben auf Expertenniveau">
+                        <canvas id="ctfChart"></canvas>
+                    </div>
+                    <p class="chart-insight">UK AI Security Institute &bull; Expertenniveau</p>
+                </div>
+            </div>
+            <p class="reveal" style="margin-top: var(--element-gap); font-size: var(--small-size); color: rgba(245,243,238,0.4);">Nicht &ouml;ffentlich verf&uuml;gbar, nur f&uuml;r Launch-Partner: AWS, Apple, Google, Microsoft</p>
         </div>
         <div class="slide-counter">04 / 17</div>
     </section>
@@ -681,6 +718,108 @@
        JAVASCRIPT: PRESENTATION CONTROLLER
        =========================================== -->
     <script>
+        // ===========================================
+        // GAUGE ANIMATIONS (Slide 2)
+        // ===========================================
+        var gaugesAnimated = false;
+        function animateGauges() {
+            if (gaugesAnimated) return;
+            gaugesAnimated = true;
+            document.querySelectorAll('.gauge-fill').forEach(function(fill) {
+                var pct = parseFloat(fill.getAttribute('data-percent')) / 100;
+                var circumference = 2 * Math.PI * 45;
+                fill.style.strokeDashoffset = circumference * (1 - pct);
+                fill.classList.add('animated');
+            });
+            document.querySelectorAll('.gauge-value[data-count]').forEach(function(el) {
+                if (el.dataset.counted) return;
+                el.dataset.counted = '1';
+                var target = parseFloat(el.dataset.count);
+                var suffix = el.dataset.suffix || '';
+                var startTime = performance.now();
+                var duration = 1500;
+                (function tick(now) {
+                    var p = Math.min((now - startTime) / duration, 1);
+                    var eased = 1 - Math.pow(1 - p, 3);
+                    el.textContent = Math.round(target * eased) + suffix;
+                    if (p < 1) requestAnimationFrame(tick);
+                })(startTime);
+            });
+        }
+
+        // ===========================================
+        // CHART.JS — Glasswing Charts (Slide 4)
+        // ===========================================
+        var chartsBuilt = false;
+        function buildGlasswingCharts() {
+            if (chartsBuilt) return;
+            if (typeof Chart === 'undefined') return;
+            var textColor = 'rgba(245, 243, 238, 0.75)';
+            var textBold = 'rgba(245, 243, 238, 0.95)';
+            var gridColor = 'rgba(245, 243, 238, 0.06)';
+            var terracotta = '#c1664a';
+            var warm = '#e8d4c0';
+
+            var bugCtx = document.getElementById('bugAgeChart');
+            if (bugCtx) {
+                new Chart(bugCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['OpenBSD', 'FFmpeg'],
+                        datasets: [{ label: 'Jahre unentdeckt', data: [27, 16], backgroundColor: [terracotta, warm], borderWidth: 0, borderRadius: 3, barThickness: 28 }]
+                    },
+                    options: {
+                        indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: false,
+                        layout: { padding: { top: 10, right: 20, bottom: 10, left: 10 } },
+                        plugins: { legend: { display: false }, tooltip: { enabled: true, padding: 12, cornerRadius: 4, callbacks: { label: function(ctx) { return ctx.raw + ' Jahre unentdeckt'; } } } },
+                        scales: {
+                            x: { beginAtZero: true, max: 30, ticks: { color: textColor, font: { family: "'Work Sans', sans-serif", size: 11 }, callback: function(v) { return v + ' J.'; }, maxTicksLimit: 4 }, grid: { color: gridColor } },
+                            y: { ticks: { color: textBold, font: { family: "'Fraunces', serif", size: 14, weight: 700 } }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            var ctfCtx = document.getElementById('ctfChart');
+            if (ctfCtx) {
+                new Chart(ctfCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Erfolg', 'Fehlgeschlagen'],
+                        datasets: [{ data: [73, 27], backgroundColor: [terracotta, 'rgba(245, 243, 238, 0.08)'], borderWidth: 0 }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, animation: false, cutout: '72%',
+                        layout: { padding: 10 },
+                        plugins: { legend: { display: false }, tooltip: { enabled: true, padding: 12, callbacks: { label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; } } } }
+                    },
+                    plugins: [{
+                        id: 'centerText',
+                        afterDraw: function(chart) {
+                            var ctx2 = chart.ctx;
+                            var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                            var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                            ctx2.save();
+                            ctx2.textAlign = 'center'; ctx2.textBaseline = 'middle';
+                            ctx2.font = '900 36px "Fraunces", serif';
+                            ctx2.fillStyle = textBold;
+                            ctx2.fillText('73%', centerX, centerY - 6);
+                            ctx2.font = '500 11px "Work Sans", sans-serif';
+                            ctx2.fillStyle = textColor;
+                            ctx2.fillText('Erfolg', centerX, centerY + 18);
+                            ctx2.restore();
+                        }
+                    }]
+                });
+            }
+            chartsBuilt = true;
+        }
+
+        function triggerSlideCharts(index) {
+            if (index === 1) animateGauges();
+            if (index === 3) buildGlasswingCharts();
+        }
+
         class SlidePresentation {
             constructor() {
                 this.slides = document.querySelectorAll('.slide');
@@ -704,6 +843,7 @@
                                 this.currentSlide = index;
                                 this.updateProgressBar();
                                 this.updateNavDots();
+                                triggerSlideCharts(index);
                             }
                         }
                     });
