@@ -183,6 +183,11 @@
         .slide-divider .resource-list li { border-bottom-color: rgba(245, 243, 238, 0.1); }
         .slide-divider .resource-cmd { color: rgba(245, 243, 238, 0.9); background: rgba(245, 243, 238, 0.08); }
 
+        /* === INCANTATIONS === */
+        .incantation-list { list-style: none; display: flex; gap: clamp(0.4rem, 0.8vw, 0.8rem); flex-wrap: wrap; margin-top: var(--content-gap); }
+        .incantation-list li { font-family: 'JetBrains Mono', monospace; font-size: clamp(0.55rem, 0.9vw, 0.75rem); color: rgba(245, 243, 238, 0.85); background: rgba(245, 243, 238, 0.06); border: 1px solid rgba(245, 243, 238, 0.12); padding: clamp(0.25rem, 0.4vh, 0.4rem) clamp(0.5rem, 0.8vw, 0.8rem); border-radius: 4px; line-height: 1.4; }
+        .incantation-label { font-family: var(--font-body); font-size: var(--small-size); font-weight: 600; color: var(--accent-warm); text-transform: uppercase; letter-spacing: 0.15em; margin-top: var(--content-gap); }
+
         /* === SHORTCUT TABLE === */
         .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: var(--content-gap); }
         @media (max-width: 700px) { .shortcut-grid { grid-template-columns: 1fr; } }
@@ -233,7 +238,7 @@
             <h1 class="reveal">Claude Code</h1>
             <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.4rem, 4vw, 3.2rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Der neue Standard</h1>
             <hr class="editorial-hr reveal" style="margin: clamp(1rem, 2vh, 2rem) auto;">
-            <p class="reveal" style="max-width: min(70vw, 500px);">Wie KI-Agenten die Regeln der Softwareentwicklung neu schreiben</p>
+            <p class="reveal" style="max-width: min(70vw, 500px);">Wie KI-Agenten die Regeln der Softwareentwicklung neu definieren</p>
         </div>
         <div class="slide-counter">01 / 17</div>
     </section>
@@ -577,9 +582,15 @@
                     <span class="resource-cmd">npx skills add pbakaus/impeccable</span>
                 </li>
                 <li>
-                    <span class="resource-label">Last 30 Days (recherchiert Reddit, X, YouTube, HN zu jedem Thema)</span>
-                    <span class="resource-cmd">/plugin marketplace add mvanhorn/last30days-skill</span>
+                    <span class="resource-label">Everything Claude Code (Skills, Hooks, Agents, Security aus einer Quelle)</span>
+                    <span class="resource-cmd">github.com/affaan-m/everything-claude-code</span>
                 </li>
+            </ul>
+            <p class="incantation-label reveal">Power-Prompts</p>
+            <ul class="incantation-list reveal">
+                <li>Find the root cause of the issue</li>
+                <li>Implement the plan with painstaking detail</li>
+                <li>Make changes doing minimal essential changes</li>
             </ul>
         </div>
         <div class="slide-counter">15 / 17</div>
@@ -595,44 +606,36 @@
             <h2 class="reveal" style="color: var(--bg-cream);">&Uuml;bersicht Claude Code</h2>
             <div class="shortcut-grid reveal">
                 <div class="shortcut-item">
-                    <span class="shortcut-desc">&Auml;nderungen r&uuml;ckg&auml;ngig machen</span>
+                    <span class="shortcut-desc">Neuer Chat</span>
+                    <span class="shortcut-key">Cmd+K</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Letzte Nachricht bearbeiten</span>
+                    <span class="shortcut-key">&uarr;</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Generierung stoppen</span>
+                    <span class="shortcut-key">Cmd+.</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Sidebar ein/ausblenden</span>
+                    <span class="shortcut-key">Cmd+/</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Neue Zeile ohne Senden</span>
+                    <span class="shortcut-key">Shift+Enter</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Zu Checkpoint zur&uuml;ckspulen</span>
                     <span class="shortcut-key">Esc Esc</span>
                 </div>
                 <div class="shortcut-item">
-                    <span class="shortcut-desc">Generierung abbrechen</span>
-                    <span class="shortcut-key">Ctrl+C</span>
+                    <span class="shortcut-desc">Permission-Modus wechseln</span>
+                    <span class="shortcut-key">Shift+Tab</span>
                 </div>
                 <div class="shortcut-item">
-                    <span class="shortcut-desc">Kontext komprimieren</span>
-                    <span class="shortcut-key">/compact</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-desc">Konversation leeren</span>
-                    <span class="shortcut-key">/clear</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-desc">Modell wechseln</span>
-                    <span class="shortcut-key">Option+P</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-desc">Mehrzeilige Eingabe</span>
-                    <span class="shortcut-key">\ + Enter</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-desc">Datei referenzieren</span>
-                    <span class="shortcut-key">@dateiname</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-desc">Alle Befehle anzeigen</span>
-                    <span class="shortcut-key">/</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-desc">Vim-Modus aktivieren</span>
-                    <span class="shortcut-key">/vim</span>
-                </div>
-                <div class="shortcut-item">
-                    <span class="shortcut-desc">Letzte &Auml;nderungen anzeigen</span>
-                    <span class="shortcut-key">/diff</span>
+                    <span class="shortcut-desc">Nebenfrage stellen</span>
+                    <span class="shortcut-key">/btw</span>
                 </div>
             </div>
         </div>
