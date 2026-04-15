@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code: Der neue Standard</title>
+
+    <!-- Fonts: Fraunces (display) + Work Sans (body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (VINTAGE EDITORIAL)
+           =========================================== */
+        :root {
+            --bg-cream: #f5f3ee;
+            --bg-dark: #1a1a1a;
+            --text-primary: #1a1a1a;
+            --text-secondary: #555;
+            --text-muted: #888;
+            --accent-warm: #e8d4c0;
+            --accent-terracotta: #c1664a;
+            --accent-ink: #2c2c2c;
+            --border-color: #1a1a1a;
+
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Work Sans', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.2vw, 1.5rem);
+            --body-size: clamp(0.75rem, 1.3vw, 1.05rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --stat-size: clamp(2rem, 5vw, 4.5rem);
+
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.4rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.7s;
+        }
+
+        /* ===========================================
+           BASE STYLES
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+        }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+        .feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+
+        @media (max-height: 700px) {
+            :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+        }
+        @media (max-height: 600px) {
+            :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+            .nav-dots, .keyboard-hint, .decorative { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .grid { grid-template-columns: 1fr; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; }
+        }
+
+        /* ===========================================
+           VINTAGE EDITORIAL THEME
+           =========================================== */
+        body { font-family: var(--font-body); color: var(--text-primary); background: var(--bg-cream); }
+        .slide { background: var(--bg-cream); position: relative; }
+
+        h1, h2, h3 { font-family: var(--font-display); }
+        h1 { font-size: var(--title-size); font-weight: 900; line-height: 1.05; }
+        h2 { font-size: var(--h2-size); font-weight: 700; line-height: 1.15; margin-bottom: var(--content-gap); }
+        h3 { font-size: var(--h3-size); font-weight: 600; line-height: 1.3; }
+        p, li { font-size: var(--body-size); line-height: 1.6; color: var(--text-secondary); }
+
+        /* === GEOMETRIC DECORATIONS === */
+        .geo-circle { position: absolute; border: 2px solid var(--text-primary); border-radius: 50%; opacity: 0; transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo); transform: scale(0.8); }
+        .visible .geo-circle { opacity: 1; transform: scale(1); }
+        .geo-line { position: absolute; height: 2px; background: var(--text-primary); opacity: 0; transition: opacity 0.6s ease 0.2s, transform 0.6s var(--ease-out-expo) 0.2s; transform: scaleX(0); transform-origin: left; }
+        .visible .geo-line { opacity: 1; transform: scaleX(1); }
+        .geo-dot { position: absolute; width: clamp(6px, 0.8vw, 10px); height: clamp(6px, 0.8vw, 10px); background: var(--text-primary); border-radius: 50%; opacity: 0; transition: opacity 0.5s ease 0.4s; }
+        .visible .geo-dot { opacity: 1; }
+
+        /* === REVEAL ANIMATIONS === */
+        .reveal { opacity: 0; transform: translateY(25px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+
+        .eyebrow { font-family: var(--font-body); font-size: var(--small-size); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: clamp(0.8rem, 2vh, 1.5rem); }
+
+        /* === SECTION DIVIDER === */
+        .slide-divider { background: var(--bg-dark); color: var(--bg-cream); }
+        .slide-divider h2 { color: var(--bg-cream); }
+        .slide-divider p,
+        .slide-divider li,
+        .slide-divider li span,
+        .slide-divider li strong,
+        .slide-divider .stat-label { color: rgba(245, 243, 238, 0.75); }
+        .slide-divider li strong { color: rgba(245, 243, 238, 0.95); }
+        .slide-divider .eyebrow { color: var(--accent-warm); }
+        .slide-divider .geo-circle { border-color: rgba(245, 243, 238, 0.2); }
+        .slide-divider .geo-line { background: rgba(245, 243, 238, 0.2); }
+        .slide-divider .geo-dot { background: rgba(245, 243, 238, 0.3); }
+
+        /* === STATS === */
+        .stat-number { font-family: var(--font-display); font-size: var(--stat-size); font-weight: 900; color: var(--text-primary); line-height: 1; }
+        .stat-label { font-size: var(--body-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vh, 0.6rem); }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 3vw, 3rem); text-align: center; margin-top: var(--content-gap); }
+        @media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr; } }
+
+        /* === BORDERED BOX === */
+        .bordered-box { border: 2px solid var(--border-color); padding: clamp(1rem, 2.5vw, 2rem); position: relative; }
+        .bordered-box::before { content: attr(data-label); position: absolute; top: calc(-1 * clamp(0.4rem, 0.7vw, 0.6rem)); left: clamp(0.8rem, 2vw, 1.5rem); background: var(--bg-cream); padding: 0 clamp(0.3rem, 0.5vw, 0.5rem); font-size: var(--small-size); font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+        .slide-divider .bordered-box { border-color: rgba(245, 243, 238, 0.3); }
+        .slide-divider .bordered-box::before { background: var(--bg-dark); color: var(--accent-warm); }
+
+        /* === PRINCIPLE CARD === */
+        .principle { display: flex; gap: clamp(1rem, 2vw, 2rem); align-items: flex-start; margin-top: var(--content-gap); }
+        .principle-num { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 900; color: var(--accent-warm); line-height: 1; flex-shrink: 0; }
+        .principle-content h3 { margin-bottom: clamp(0.3rem, 0.6vh, 0.5rem); }
+
+        /* === QUOTE === */
+        .quote-text { font-family: var(--font-display); font-style: italic; font-size: clamp(1.3rem, 3vw, 2.5rem); font-weight: 400; line-height: 1.35; color: var(--text-primary); }
+
+        /* === LIST STYLES === */
+        .editorial-list { list-style: none; margin-top: var(--content-gap); }
+        .editorial-list li { padding: clamp(0.5rem, 1vh, 0.8rem) 0; border-bottom: 1px solid rgba(26, 26, 26, 0.1); display: flex; gap: clamp(0.5rem, 1vw, 1rem); align-items: baseline; }
+        .editorial-list li:last-child { border-bottom: none; }
+        .list-marker { font-family: var(--font-display); font-weight: 900; color: var(--accent-terracotta); font-size: var(--body-size); flex-shrink: 0; min-width: clamp(1.2rem, 2vw, 1.8rem); }
+        .slide-divider .editorial-list li { border-bottom-color: rgba(245, 243, 238, 0.1); }
+
+        /* === AGENT LOOP DIAGRAM === */
+        .loop-diagram { display: flex; align-items: center; justify-content: center; gap: clamp(0.3rem, 0.8vw, 0.8rem); margin-top: var(--content-gap); flex-wrap: wrap; }
+        .loop-step { border: 2px solid var(--border-color); padding: clamp(0.5rem, 1vw, 1rem) clamp(0.8rem, 1.5vw, 1.5rem); font-family: var(--font-display); font-size: clamp(0.7rem, 1.2vw, 1rem); font-weight: 700; }
+        .loop-arrow { font-size: clamp(0.8rem, 1.5vw, 1.2rem); color: var(--text-muted); }
+
+        /* === TWO COLUMN === */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 4vw, 4rem); align-items: start; margin-top: var(--content-gap); }
+        @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+        /* === CHECKLIST === */
+        .checklist { list-style: none; margin-top: var(--content-gap); }
+        .checklist li { padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(26, 26, 26, 0.1); display: flex; gap: clamp(0.6rem, 1vw, 1rem); align-items: flex-start; }
+        .checklist li:last-child { border-bottom: none; }
+        .check-num { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.2rem, 2vw, 1.8rem); color: var(--accent-terracotta); line-height: 1; flex-shrink: 0; min-width: clamp(1.5rem, 2.5vw, 2.5rem); }
+        .check-content h3 { margin-bottom: clamp(0.1rem, 0.3vh, 0.3rem); }
+        .check-content p { font-size: var(--small-size); }
+
+        /* === RESOURCE COMMANDS === */
+        .resource-list { list-style: none; margin-top: var(--content-gap); }
+        .resource-list li { padding: clamp(0.5rem, 1vh, 0.8rem) 0; border-bottom: 1px solid rgba(26, 26, 26, 0.1); }
+        .resource-list li:last-child { border-bottom: none; }
+        .resource-label { font-size: var(--small-size); font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: clamp(0.2rem, 0.4vh, 0.4rem); }
+        .resource-cmd { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace; font-size: clamp(0.65rem, 1.1vw, 0.9rem); color: var(--text-primary); background: rgba(26, 26, 26, 0.06); padding: clamp(0.3rem, 0.5vw, 0.5rem) clamp(0.5rem, 1vw, 0.8rem); border-radius: 4px; display: inline-block; }
+        .slide-divider .resource-list li { border-bottom-color: rgba(245, 243, 238, 0.1); }
+        .slide-divider .resource-cmd { color: rgba(245, 243, 238, 0.9); background: rgba(245, 243, 238, 0.08); }
+
+        /* === SHORTCUT TABLE === */
+        .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: var(--content-gap); }
+        @media (max-width: 700px) { .shortcut-grid { grid-template-columns: 1fr; } }
+        .shortcut-item { display: flex; justify-content: space-between; align-items: center; padding: clamp(0.4rem, 0.8vh, 0.7rem) clamp(0.5rem, 1vw, 1rem); border-bottom: 1px solid rgba(245, 243, 238, 0.08); gap: clamp(0.5rem, 1vw, 1rem); }
+        .shortcut-item:nth-child(odd) { border-right: 1px solid rgba(245, 243, 238, 0.08); }
+        .shortcut-desc { font-size: var(--small-size); color: rgba(245, 243, 238, 0.6); }
+        .shortcut-key { font-family: 'JetBrains Mono', monospace; font-size: clamp(0.6rem, 1vw, 0.8rem); color: rgba(245, 243, 238, 0.9); background: rgba(245, 243, 238, 0.1); padding: clamp(0.15rem, 0.3vw, 0.3rem) clamp(0.4rem, 0.7vw, 0.6rem); border-radius: 4px; white-space: nowrap; }
+
+        /* === PROGRESS BAR === */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-terracotta); z-index: 9999; transition: width 0.3s ease; width: 0%; }
+
+        /* === NAV DOTS === */
+        .nav-dots { position: fixed; right: clamp(1rem, 2vw, 2rem); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: clamp(6px, 0.8vh, 10px); z-index: 9998; }
+        .nav-dot { width: clamp(6px, 0.6vw, 8px); height: clamp(6px, 0.6vw, 8px); border-radius: 50%; background: rgba(26, 26, 26, 0.15); cursor: pointer; transition: background 0.3s, transform 0.3s; border: none; padding: 0; }
+        .nav-dot.active { background: var(--accent-terracotta); transform: scale(1.4); }
+
+        .editorial-hr { width: clamp(40px, 6vw, 80px); height: 2px; background: var(--text-primary); border: none; margin: clamp(0.8rem, 1.5vh, 1.5rem) 0; }
+        .slide-divider .editorial-hr { background: var(--accent-warm); }
+
+        .slide-counter { position: absolute; bottom: clamp(1rem, 3vh, 2rem); right: clamp(1.5rem, 3vw, 3rem); font-size: var(--small-size); color: var(--text-muted); font-weight: 500; letter-spacing: 0.1em; }
+        .slide-divider .slide-counter { color: rgba(245, 243, 238, 0.3); }
+
+        /* === EDIT MODE === */
+        .edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+        .edit-toggle { position: fixed; top: clamp(0.8rem, 2vh, 1.5rem); left: clamp(0.8rem, 2vw, 1.5rem); background: var(--bg-dark); color: var(--bg-cream); border: none; width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; font-size: clamp(14px, 1.5vw, 18px); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 10001; }
+        .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+        .edit-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--accent-terracotta); color: white; text-align: center; padding: clamp(0.3rem, 0.5vh, 0.5rem); font-size: var(--small-size); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .edit-banner.active { opacity: 1; }
+        body.edit-active [contenteditable] { outline: 1px dashed rgba(193, 102, 74, 0.4); outline-offset: 4px; cursor: text; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Foliennavigation"></nav>
+    <div class="edit-hotzone" id="editHotzone"></div>
+    <button class="edit-toggle" id="editToggle" title="Bearbeitungsmodus (E)">&#9998;</button>
+    <div class="edit-banner" id="editBanner">Bearbeitungsmodus &mdash; Text anklicken zum Bearbeiten &bull; Strg+S zum Speichern</div>
+
+    <!-- ===========================================
+         FOLIE 1: TITEL
+         =========================================== -->
+    <section class="slide" data-slide="1">
+        <div class="geo-circle" style="top: clamp(2rem, 8vh, 6rem); right: clamp(2rem, 8vw, 8rem); width: clamp(80px, 12vw, 160px); height: clamp(80px, 12vw, 160px);"></div>
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 10vw, 140px);"></div>
+        <div class="geo-dot" style="bottom: clamp(3.5rem, 9.5vh, 7.5rem); left: calc(clamp(3rem, 6vw, 6rem) + clamp(70px, 11vw, 150px));"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Developer Session &bull; 2026</p>
+            <h1 class="reveal">Claude Code</h1>
+            <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.4rem, 4vw, 3.2rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Der neue Standard</h1>
+            <hr class="editorial-hr reveal" style="margin: clamp(1rem, 2vh, 2rem) auto;">
+            <p class="reveal" style="max-width: min(70vw, 500px);">Wie KI-Agenten die Regeln der Softwareentwicklung neu schreiben</p>
+        </div>
+        <div class="slide-counter">01 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 2: DIE ZAHLEN
+         =========================================== -->
+    <section class="slide" data-slide="2">
+        <div class="geo-circle" style="bottom: clamp(3rem, 8vh, 7rem); right: clamp(2rem, 5vw, 5rem); width: clamp(50px, 7vw, 100px); height: clamp(50px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Status Quo</p>
+            <h2 class="reveal">KI schreibt bereits<br><em style="font-weight: 400;">die H&auml;lfte des Codes</em></h2>
+            <div class="stat-grid reveal">
+                <div>
+                    <div class="stat-number">51%</div>
+                    <div class="stat-label">des GitHub-Codes ist KI-generiert oder KI-unterst&uuml;tzt</div>
+                </div>
+                <div>
+                    <div class="stat-number">275M</div>
+                    <div class="stat-label">Commits pro Woche auf GitHub</div>
+                </div>
+                <div>
+                    <div class="stat-number">60%</div>
+                    <div class="stat-label">mehr PRs gemergt von t&auml;glichen KI-Nutzern</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">02 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 3: DIE EVOLUTION
+         =========================================== -->
+    <section class="slide" data-slide="3">
+        <div class="geo-circle" style="top: clamp(5rem, 15vh, 10rem); left: clamp(2rem, 5vw, 5rem); width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px);"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="eyebrow reveal">Die Entwicklung</p>
+            <h2 class="reveal" style="margin-bottom: clamp(1.5rem, 3vh, 3rem);">Die drei Stufen</h2>
+            <div class="loop-diagram reveal">
+                <div class="loop-step">Coding</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Tool Use</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Computer Use</div>
+            </div>
+            <hr class="editorial-hr reveal" style="margin: clamp(1.5rem, 3vh, 3rem) auto;">
+            <p class="reveal" style="max-width: min(70vw, 550px);">KI wird nicht nur durch bessere Modelle leistungsf&auml;higer, sondern vor allem durch <strong>bessere Werkzeuge</strong>. Die Modelle werden nicht schlauer. Sie bekommen bessere Tools.</p>
+        </div>
+        <div class="slide-counter">03 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 4: PROJECT GLASSWING
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="4">
+        <div class="geo-circle" style="top: clamp(3rem, 10vh, 8rem); right: clamp(3rem, 8vw, 8rem); width: clamp(60px, 9vw, 130px); height: clamp(60px, 9vw, 130px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">April 2026</p>
+            <h2 class="reveal">Project Glasswing</h2>
+            <hr class="editorial-hr reveal">
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Claude Mythos Preview hat <strong>Tausende Zero-Day-Schwachstellen</strong> in allen gro&szlig;en Betriebssystemen und Browsern gefunden</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span>Darunter ein <strong>27 Jahre alter Bug</strong> in OpenBSD und eine <strong>16 Jahre alte L&uuml;cke</strong> in FFmpeg</span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span>Das UK AI Security Institute best&auml;tigt: <strong>73% Erfolgsquote</strong> bei CTF-Aufgaben auf Expertenniveau</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Nicht &ouml;ffentlich verf&uuml;gbar, nur f&uuml;r Launch-Partner: AWS, Apple, Google, Microsoft</span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">04 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 5: DAS SOURCE-LEAK
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="5">
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 10vw, 150px);"></div>
+        <div class="geo-dot" style="bottom: clamp(3.5rem, 9.5vh, 7.5rem); left: calc(clamp(3rem, 6vw, 6rem) + clamp(70px, 11vw, 160px));"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">1. April 2026</p>
+            <h2 class="reveal">Das Source-Leak</h2>
+            <hr class="editorial-hr reveal">
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Ein Packaging-Fehler legte <strong>512.000 Zeilen</strong> TypeScript offen</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span>&Uuml;ber 41.500 Mal gespiegelt, schnellstes GitHub-Repo mit <strong>50K Stars</strong> aller Zeiten</span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span>Zum Vorschein kam <strong>KAIROS</strong>, ein permanent aktiver Hintergrund-Agent</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Kommende Features: konversations&uuml;bergreifendes Ged&auml;chtnis, Multi-Agent-Kollaboration</span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">05 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 6: SECTION BREAK
+         =========================================== -->
+    <section class="slide" data-slide="6">
+        <div class="geo-circle" style="bottom: clamp(5rem, 12vh, 10rem); right: clamp(4rem, 10vw, 10rem); width: clamp(100px, 15vw, 200px); height: clamp(100px, 15vw, 200px);"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Teil Zwei</p>
+            <h1 class="reveal">Wie Claude Code<br><em style="font-weight: 400; font-style: italic; font-size: clamp(1.4rem, 4vw, 3.2rem); color: var(--text-secondary);">wirklich funktioniert</em></h1>
+        </div>
+        <div class="slide-counter">06 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 7: DAS HARNESS-MODELL
+         =========================================== -->
+    <section class="slide" data-slide="7">
+        <div class="geo-dot" style="top: clamp(3rem, 8vh, 6rem); right: clamp(4rem, 8vw, 8rem);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Agent-Architektur</p>
+            <h2 class="reveal">Das Harness-Modell</h2>
+            <div class="bordered-box reveal" data-label="Der Loop" style="margin-top: var(--content-gap);">
+                <p style="margin-bottom: var(--element-gap);">Tools <strong>(read, list, write)</strong> liefern Kontext &rarr; das LLM erkennt Probleme und nimmt &Auml;nderungen vor &rarr; bekommt Feedback &rarr; iteriert weiter.</p>
+                <div class="loop-diagram" style="margin-top: var(--element-gap);">
+                    <div class="loop-step">Lesen</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step">Denken</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step">Handeln</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step">Feedback</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step" style="border-color: var(--accent-terracotta); color: var(--accent-terracotta);">Wiederholen</div>
+                </div>
+            </div>
+            <p class="reveal" style="margin-top: var(--content-gap);">Das ist kein Autocomplete. Claude sagt nicht eure n&auml;chste Zeile voraus. Es <strong>denkt &uuml;ber euer Problem nach</strong>, probiert L&ouml;sungen aus und korrigiert sich selbst.</p>
+        </div>
+        <div class="slide-counter">07 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 8: KONTEXT IST ALLES
+         =========================================== -->
+    <section class="slide" data-slide="8">
+        <div class="geo-line" style="top: clamp(4rem, 10vh, 7rem); right: clamp(3rem, 6vw, 6rem); width: clamp(40px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Kernerkenntnis</p>
+            <h2 class="reveal">Der Loop ist nur so gut<br><em style="font-weight: 400;">wie der Kontext, den du ihm gibst</em></h2>
+            <div class="two-col reveal">
+                <div class="bordered-box" data-label="Wenig Kontext">
+                    <p>Einzeiler-Prompt, keine Projektinfos, keine Konventionen</p>
+                    <p style="margin-top: var(--element-gap); color: var(--accent-terracotta); font-weight: 600;">&rarr; Falsche Annahmen, falscher Stil, over-engineered</p>
+                </div>
+                <div class="bordered-box" data-label="Viel Kontext">
+                    <p>CLAUDE.md, klare Ziele, euer Stack und eure Konventionen</p>
+                    <p style="margin-top: var(--element-gap); color: var(--accent-terracotta); font-weight: 600;">&rarr; Code, der perfekt zu eurem Projekt passt</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">08 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 9: SECTION BREAK — CLAUDE.MD
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="9">
+        <div class="geo-circle" style="top: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 9vw, 120px); height: clamp(60px, 9vw, 120px);"></div>
+        <div class="geo-line" style="bottom: clamp(5rem, 12vh, 9rem); right: clamp(3rem, 6vw, 6rem); width: clamp(50px, 8vw, 120px);"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Teil Drei</p>
+            <h1 class="reveal">CLAUDE.md</h1>
+            <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.3rem, 3.5vw, 2.8rem); color: rgba(245, 243, 238, 0.6); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Das Gehirn deines Projekts</h1>
+        </div>
+        <div class="slide-counter">09 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 10: WAS IST CLAUDE.MD
+         =========================================== -->
+    <section class="slide" data-slide="10">
+        <div class="geo-dot" style="top: clamp(4rem, 10vh, 7rem); left: clamp(4rem, 8vw, 8rem);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Das Fundament</p>
+            <h2 class="reveal">Was ist CLAUDE.md?</h2>
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Eine Markdown-Datei <strong>im Root eures Repos</strong>, die Claude sagt, wie es sich in eurem Projekt verhalten soll</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span><strong>Versioniert</strong> im Repo. Euer ganzes Team teilt und reviewt sie in PRs</span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span><strong>Bleibt &uuml;ber Sessions bestehen.</strong> Einmal schreiben, Claude h&auml;lt sich immer dran</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Kein System-Prompt. Sie ist <strong>projektspezifisch</strong>, kombinierbar und lebt in eurer Codebase</span>
+                </li>
+                <li>
+                    <span class="list-marker">5</span>
+                    <span>Startet mit Karpathys Vorlage: <strong style="font-family: 'JetBrains Mono', monospace; font-size: clamp(0.6rem, 1vw, 0.85rem);">claude install-skill https://github.com/forrestchang/andrej-karpathy-skills</strong></span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">10 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 11: PRINZIPIEN 1 & 2
+         =========================================== -->
+    <section class="slide" data-slide="11">
+        <div class="geo-circle" style="bottom: clamp(3rem, 8vh, 6rem); right: clamp(3rem, 6vw, 6rem); width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">github.com/forrestchang/andrej-karpathy-skills</p>
+            <h2 class="reveal">So schreibt ihr eine gute CLAUDE.md-Datei</h2>
+            <div class="principle reveal">
+                <div class="principle-num">01</div>
+                <div class="principle-content">
+                    <h3>Erst denken, dann coden</h3>
+                    <p>&bdquo;Mehrdeutigkeiten explizit benennen. Mehrere Interpretationen pr&auml;sentieren, statt still eine zu w&auml;hlen.&ldquo;</p>
+                </div>
+            </div>
+            <div class="principle reveal">
+                <div class="principle-num">02</div>
+                <div class="principle-content">
+                    <h3>Einfachheit zuerst</h3>
+                    <p>Unn&ouml;tige Abstraktionen vermeiden. Der Test: W&uuml;rde ein Senior Engineer es als &uuml;berkompliziert bezeichnen?</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">11 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 12: PRINZIPIEN 3 & 4
+         =========================================== -->
+    <section class="slide" data-slide="12">
+        <div class="geo-line" style="top: clamp(3rem, 8vh, 6rem); left: clamp(3rem, 6vw, 6rem); width: clamp(40px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">github.com/forrestchang/andrej-karpathy-skills</p>
+            <h2 class="reveal">So schreibt ihr eine gute CLAUDE.md-Datei</h2>
+            <div class="principle reveal">
+                <div class="principle-num">03</div>
+                <div class="principle-content">
+                    <h3>Chirurgische &Auml;nderungen</h3>
+                    <p>Bestehenden Stil beibehalten. Jede ge&auml;nderte Zeile muss direkt auf die Anforderung zur&uuml;ckf&uuml;hrbar sein. Keine Refactors im Vorbeigehen.</p>
+                </div>
+            </div>
+            <div class="principle reveal">
+                <div class="principle-num">04</div>
+                <div class="principle-content">
+                    <h3>Zielorientierte Ausf&uuml;hrung</h3>
+                    <p>Vage Anforderungen in testbare Kriterien &uuml;bersetzen. Nicht &bdquo;mach es besser&ldquo; sagen, sondern klar definieren, wie &bdquo;fertig&ldquo; aussieht.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">12 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 13: SECTION BREAK — SKILLS
+         =========================================== -->
+    <section class="slide" data-slide="13">
+        <div class="geo-circle" style="top: clamp(4rem, 10vh, 8rem); right: clamp(4rem, 8vw, 8rem); width: clamp(70px, 10vw, 150px); height: clamp(70px, 10vw, 150px);"></div>
+        <div class="geo-dot" style="bottom: clamp(5rem, 12vh, 9rem); left: clamp(5rem, 10vw, 10rem);"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Teil Vier</p>
+            <h1 class="reveal">Skills</h1>
+            <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.3rem, 3.5vw, 2.8rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Modulare Workflows</h1>
+        </div>
+        <div class="slide-counter">13 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 14: SKILLS ERKL&Auml;RT
+         =========================================== -->
+    <section class="slide" data-slide="14">
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 7rem); right: clamp(3rem, 6vw, 6rem); width: clamp(50px, 8vw, 120px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Code als Schnittstelle</p>
+            <h2 class="reveal">Was sind Skills?</h2>
+            <p class="reveal">Statt aufgabenspezifische Agenten zu bauen, behandelt Claude Code Code als <strong>&bdquo;Schnittstelle zur digitalen Welt&ldquo;</strong>. Ein universeller Agent, angereichert mit modularen Skills.</p>
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Jeder Skill ist eine <strong>SKILL.md</strong>-Datei in einem Ordner, reines Markdown</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span>Installieren: <strong>claude skills add mattpocock/skills/grill-me</strong></span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span>Ausf&uuml;hren: <strong>/grill-me</strong> in der Konversation eingeben</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Eigene Skills schreiben dauert <strong>keine 10 Minuten</strong></span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">14 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 15: RESSOURCEN
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="15">
+        <div class="geo-dot" style="top: clamp(4rem, 10vh, 7rem); right: clamp(4rem, 8vw, 8rem);"></div>
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 7rem); left: clamp(3rem, 6vw, 6rem); width: clamp(50px, 8vw, 120px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Zum Ausprobieren</p>
+            <h2 class="reveal">Ressourcen</h2>
+            <ul class="resource-list reveal">
+                <li>
+                    <span class="resource-label">Karpathys CLAUDE.md installieren</span>
+                    <span class="resource-cmd">claude install-skill https://github.com/forrestchang/andrej-karpathy-skills</span>
+                </li>
+                <li>
+                    <span class="resource-label">Grill Me Skill (Ideen stresstesten)</span>
+                    <span class="resource-cmd">npx skills@latest add mattpocock/skills/grill-me</span>
+                </li>
+                <li>
+                    <span class="resource-label">Impeccable (Frontend Design Skills)</span>
+                    <span class="resource-cmd">npx skills add pbakaus/impeccable</span>
+                </li>
+                <li>
+                    <span class="resource-label">Last 30 Days (recherchiert Reddit, X, YouTube, HN zu jedem Thema)</span>
+                    <span class="resource-cmd">/plugin marketplace add mvanhorn/last30days-skill</span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">15 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 16: SHORTCUTS
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="16">
+        <div class="geo-circle" style="bottom: clamp(3rem, 8vh, 6rem); left: clamp(3rem, 6vw, 6rem); width: clamp(50px, 7vw, 90px); height: clamp(50px, 7vw, 90px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Shortcuts &amp; Befehle</p>
+            <h2 class="reveal" style="color: var(--bg-cream);">&Uuml;bersicht Claude Code</h2>
+            <div class="shortcut-grid reveal">
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">&Auml;nderungen r&uuml;ckg&auml;ngig machen</span>
+                    <span class="shortcut-key">Esc Esc</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Generierung abbrechen</span>
+                    <span class="shortcut-key">Ctrl+C</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Kontext komprimieren</span>
+                    <span class="shortcut-key">/compact</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Konversation leeren</span>
+                    <span class="shortcut-key">/clear</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Modell wechseln</span>
+                    <span class="shortcut-key">Option+P</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Mehrzeilige Eingabe</span>
+                    <span class="shortcut-key">\ + Enter</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Datei referenzieren</span>
+                    <span class="shortcut-key">@dateiname</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Alle Befehle anzeigen</span>
+                    <span class="shortcut-key">/</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Vim-Modus aktivieren</span>
+                    <span class="shortcut-key">/vim</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-desc">Letzte &Auml;nderungen anzeigen</span>
+                    <span class="shortcut-key">/diff</span>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">16 / 17</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 17: HACKATHON-SPICKZETTEL
+         =========================================== -->
+    <section class="slide" data-slide="15">
+        <div class="geo-circle" style="top: clamp(3rem, 8vh, 6rem); left: clamp(3rem, 6vw, 6rem); width: clamp(50px, 7vw, 100px); height: clamp(50px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Euer Spickzettel</p>
+            <h2 class="reveal">Drei Dinge, die ihr<br><em style="font-weight: 400;">heute noch tun solltet</em></h2>
+            <ul class="checklist reveal">
+                <li>
+                    <span class="check-num">1</span>
+                    <div class="check-content">
+                        <h3>CLAUDE.md anlegen, falls noch nicht vorhanden</h3>
+                        <p>Nutzt die Karpathy CLAUDE.md als Vorlage. Stack, Konventionen, Testbefehle rein. Sofort bessere Ergebnisse.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="check-num">2</span>
+                    <div class="check-content">
+                        <h3>Skills installieren und ausprobieren</h3>
+                        <p>Impeccable f&uuml;r Frontend, Grill Me zum Ideen stresstesten. Spart euch wiederkehrende Prompts.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="check-num">3</span>
+                    <div class="check-content">
+                        <h3>Mehrere Claude-Instanzen parallel nutzen</h3>
+                        <p>Kontext nicht &uuml;berladen. Immer nur ein Thema pro Instanz. Lieber drei fokussierte Sessions als eine chaotische.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">17 / 17</div>
+    </section>
+
+    <!-- ===========================================
+       JAVASCRIPT: PRESENTATION CONTROLLER
+       =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.isScrolling = false;
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.setupProgressBar();
+                this.setupNavDots();
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            if (index !== -1) {
+                                this.currentSlide = index;
+                                this.updateProgressBar();
+                                this.updateNavDots();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.target.getAttribute('contenteditable')) return;
+                    switch(e.key) {
+                        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                            e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+                        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                            e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+                        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+                        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+                    }
+                });
+            }
+
+            setupTouchNav() {
+                let startY = 0;
+                document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+                document.addEventListener('touchend', (e) => {
+                    const diff = startY - e.changedTouches[0].clientY;
+                    if (Math.abs(diff) > 50) this.goToSlide(this.currentSlide + (diff > 0 ? 1 : -1));
+                }, { passive: true });
+            }
+
+            setupWheelNav() {
+                let timeout;
+                document.addEventListener('wheel', (e) => {
+                    if (this.isScrolling) return;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        if (Math.abs(e.deltaY) > 30) {
+                            this.isScrolling = true;
+                            this.goToSlide(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+                            setTimeout(() => { this.isScrolling = false; }, 800);
+                        }
+                    }, 50);
+                }, { passive: true });
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.slides.length) return;
+                this.currentSlide = index;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.updateProgressBar();
+                this.updateNavDots();
+            }
+
+            setupProgressBar() {
+                this.progressBar = document.getElementById('progressBar');
+                this.updateProgressBar();
+            }
+            updateProgressBar() {
+                if (!this.progressBar) return;
+                this.progressBar.style.width = ((this.currentSlide + 1) / this.slides.length) * 100 + '%';
+            }
+
+            setupNavDots() {
+                this.navDotsContainer = document.getElementById('navDots');
+                if (!this.navDotsContainer) return;
+                this.navDotsContainer.innerHTML = '';
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Zu Folie ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    this.navDotsContainer.appendChild(dot);
+                });
+            }
+            updateNavDots() {
+                if (!this.navDotsContainer) return;
+                this.navDotsContainer.querySelectorAll('.nav-dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === this.currentSlide);
+                });
+            }
+        }
+
+        class InlineEditor {
+            constructor() {
+                this.isActive = false;
+                this.editToggle = document.getElementById('editToggle');
+                this.editBanner = document.getElementById('editBanner');
+                this.setupControls();
+            }
+
+            setupControls() {
+                this.editToggle.addEventListener('click', () => this.toggleEditMode());
+                const hotzone = document.getElementById('editHotzone');
+                let hideTimeout = null;
+
+                hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); this.editToggle.classList.add('show'); });
+                hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.isActive) this.editToggle.classList.remove('show'); }, 400); });
+                this.editToggle.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); });
+                this.editToggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!this.isActive) this.editToggle.classList.remove('show'); }, 400); });
+                hotzone.addEventListener('click', () => this.toggleEditMode());
+
+                document.addEventListener('keydown', (e) => {
+                    if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) this.toggleEditMode();
+                    if (e.key === 's' && (e.ctrlKey || e.metaKey) && this.isActive) { e.preventDefault(); this.exportFile(); }
+                });
+            }
+
+            toggleEditMode() {
+                this.isActive = !this.isActive;
+                document.body.classList.toggle('edit-active', this.isActive);
+                this.editToggle.classList.toggle('active', this.isActive);
+                this.editBanner.classList.toggle('active', this.isActive);
+                this.editToggle.innerHTML = this.isActive ? '&#10003;' : '&#9998;';
+                const editableSelectors = 'h1, h2, h3, p, span, li span, .stat-number, .stat-label, .quote-text';
+                document.querySelectorAll(editableSelectors).forEach(el => {
+                    if (this.isActive) el.setAttribute('contenteditable', 'true');
+                    else el.removeAttribute('contenteditable');
+                });
+                if (!this.isActive) localStorage.setItem('presentation-content', document.body.innerHTML);
+            }
+
+            exportFile() {
+                const editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+                editableEls.forEach(el => el.removeAttribute('contenteditable'));
+                document.body.classList.remove('edit-active');
+                this.editToggle.classList.remove('active', 'show');
+                this.editBanner.classList.remove('active', 'show');
+                const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                document.body.classList.add('edit-active');
+                editableEls.forEach(el => el.setAttribute('contenteditable', 'true'));
+                this.editToggle.classList.add('active');
+                this.editBanner.classList.add('active');
+                const blob = new Blob([html], { type: 'text/html' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'claude-code-presentation.html';
+                a.click();
+                URL.revokeObjectURL(a.href);
+            }
+        }
+
+        const saved = localStorage.getItem('presentation-content');
+        if (saved) document.body.innerHTML = saved;
+        const presentation = new SlidePresentation();
+        const editor = new InlineEditor();
+    </script>
+</body>
+</html>
