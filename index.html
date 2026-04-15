@@ -211,6 +211,23 @@
         .chart-container-editorial { height: clamp(160px, 22vh, 280px); position: relative; }
         .chart-insight { font-family: var(--font-display); font-size: var(--body-size); color: rgba(245, 243, 238, 0.6); font-style: italic; margin-top: clamp(0.5rem, 1vh, 0.8rem); }
 
+        /* === CONCENTRIC CIRCLES ANIMATION === */
+        .concentric-wrap { position: relative; width: clamp(200px, 28vw, 340px); height: clamp(200px, 28vw, 340px); margin-top: var(--content-gap); }
+        .concentric-ring { position: absolute; border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.6); transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo); }
+        .concentric-ring.ring-llm { inset: 0; border: 2px solid var(--text-primary); transition-delay: 0.4s; }
+        .concentric-ring.ring-agent { inset: 18%; border: 2px solid var(--accent-terracotta); transition-delay: 0.8s; }
+        .concentric-ring.ring-skills { inset: 36%; border: 2px solid var(--accent-warm); transition-delay: 1.2s; }
+        .visible .concentric-ring { opacity: 1; transform: scale(1); }
+        .ring-label { position: absolute; font-family: var(--font-display); font-weight: 700; font-size: var(--small-size); letter-spacing: 0.08em; text-transform: uppercase; }
+        .ring-llm .ring-label { top: clamp(6px, 1.2vh, 12px); left: 50%; transform: translateX(-50%); color: var(--text-primary); }
+        .ring-agent .ring-label { top: clamp(4px, 1vh, 10px); left: 50%; transform: translateX(-50%); color: var(--accent-terracotta); }
+        .ring-skills .ring-label { color: var(--accent-warm); font-size: clamp(0.55rem, 0.8vw, 0.7rem); }
+
+        /* === METR TIME HORIZONS === */
+        .metr-chart-container { height: clamp(220px, 40vh, 400px); position: relative; margin-top: var(--content-gap); }
+        .metr-source { font-size: var(--small-size); color: var(--text-muted); margin-top: clamp(0.5rem, 1vh, 1rem); }
+        .metr-source a { color: var(--accent-terracotta); text-decoration: none; border-bottom: 1px solid currentColor; }
+
         /* === SHORTCUT TABLE === */
         .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: var(--content-gap); }
         @media (max-width: 700px) { .shortcut-grid { grid-template-columns: 1fr; } }
@@ -263,7 +280,7 @@
             <hr class="editorial-hr reveal" style="margin: clamp(1rem, 2vh, 2rem) auto;">
             <p class="reveal" style="max-width: min(70vw, 500px);">Wie KI-Agenten die Regeln der Softwareentwicklung neu definieren</p>
         </div>
-        <div class="slide-counter">01 / 17</div>
+        <div class="slide-counter">01 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -303,17 +320,76 @@
                         </svg>
                         <span class="gauge-value" data-count="60" data-suffix="%">0%</span>
                     </div>
-                    <div class="gauge-label">mehr PRs gemergt von t&auml;glichen KI-Nutzern</div>
+                    <div class="gauge-label">mehr Pull Requests pro Entwickler mit KI-Tools</div>
                 </div>
             </div>
         </div>
-        <div class="slide-counter">02 / 17</div>
+        <div class="slide-counter">02 / 18</div>
     </section>
 
     <!-- ===========================================
-         FOLIE 3: DIE EVOLUTION
+         FOLIE 3: DAS SOURCE-LEAK (1. April)
          =========================================== -->
-    <section class="slide" data-slide="3">
+    <section class="slide slide-divider" data-slide="3">
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 10vw, 150px);"></div>
+        <div class="geo-dot" style="bottom: clamp(3.5rem, 9.5vh, 7.5rem); left: calc(clamp(3rem, 6vw, 6rem) + clamp(70px, 11vw, 160px));"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">1. April 2026 &bull; Claude Code Source-Leak</p>
+            <h2 class="reveal">512.000 Zeilen Code.<br><em style="font-weight: 400; color: rgba(245,243,238,0.6);">Aus Versehen ver&ouml;ffentlicht.</em></h2>
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Ein fehlender Eintrag in <strong>.npmignore</strong> legte den gesamten Claude Code TypeScript-Quellcode offen</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span>&Uuml;ber 41.500 Forks in Stunden. <strong>Schnellstes Repo auf 50K Stars</strong> in der Geschichte von GitHub</span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span>Entdeckt: <strong>KAIROS</strong>, ein permanent aktiver Hintergrund-Agent, der autonom im Hintergrund arbeitet</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Noch nicht geshippt: konversations&uuml;bergreifendes Ged&auml;chtnis, Multi-Agent-Kollaboration, Session Review</span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">03 / 18</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 4: PROJECT GLASSWING (7. April)
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="4" id="slideGlasswing">
+        <div class="geo-circle" style="top: clamp(3rem, 10vh, 8rem); right: clamp(3rem, 8vw, 8rem); width: clamp(60px, 9vw, 130px); height: clamp(60px, 9vw, 130px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">7. April 2026 &bull; Project Glasswing &bull; 6 Tage sp&auml;ter</p>
+            <h2 class="reveal">Claude Mythos</h2>
+            <p class="reveal" style="color: rgba(245,243,238,0.75); margin-bottom: var(--element-gap);">Tausende Zero-Day-Schwachstellen in <strong style="color: rgba(245,243,238,0.95);">allen gro&szlig;en Betriebssystemen und Browsern</strong> gefunden</p>
+            <div class="glasswing-chart-grid reveal">
+                <div class="chart-card" data-label="Beispiele">
+                    <div class="chart-container-editorial" role="img" aria-label="Balkendiagramm zeigt 27 Jahre alte OpenBSD-Schwachstelle und 16 Jahre alte FFmpeg-Schwachstelle">
+                        <canvas id="bugAgeChart"></canvas>
+                    </div>
+                    <p class="chart-insight">Nur zwei Beispiele von Tausenden entdeckten Schwachstellen.</p>
+                </div>
+                <div class="chart-card" data-label="UK AI Security Institute">
+                    <div class="chart-container-editorial" role="img" aria-label="Kreisdiagramm zeigt 73% Erfolgsquote bei CTF-Aufgaben auf Expertenniveau">
+                        <canvas id="ctfChart"></canvas>
+                    </div>
+                    <p class="chart-insight">73% Erfolg bei Experten-CTFs (Capture the Flag: simulierte Cyberangriffe). Vor April 2025 schaffte das kein einziges KI-Modell.</p>
+                </div>
+            </div>
+            <p class="reveal" style="margin-top: var(--element-gap); font-size: var(--small-size); color: rgba(245,243,238,0.4);">Nicht &ouml;ffentlich verf&uuml;gbar. Nur f&uuml;r AWS, Apple, Google, Microsoft und ausgew&auml;hlte Partner.</p>
+        </div>
+        <div class="slide-counter">04 / 18</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 5: DIE EVOLUTION
+         =========================================== -->
+    <section class="slide" data-slide="5">
         <div class="geo-circle" style="top: clamp(5rem, 15vh, 10rem); left: clamp(2rem, 5vw, 5rem); width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px);"></div>
         <div class="slide-content" style="align-items: center; text-align: center;">
             <p class="eyebrow reveal">Die Entwicklung</p>
@@ -326,80 +402,50 @@
                 <div class="loop-step">Computer Use</div>
             </div>
             <hr class="editorial-hr reveal" style="margin: clamp(1.5rem, 3vh, 3rem) auto;">
-            <p class="reveal" style="max-width: min(70vw, 550px);">KI wird nicht nur durch bessere Modelle leistungsf&auml;higer, sondern vor allem durch <strong>bessere Werkzeuge</strong>. Die Modelle werden nicht schlauer. Sie bekommen bessere Tools.</p>
+            <p class="reveal" style="max-width: min(70vw, 550px);">Die Modelle werden zwar besser, aber der gr&ouml;&szlig;te Fortschritt kommt durch <strong>bessere Werkzeuge</strong>. Nicht das Modell allein macht den Unterschied, sondern was es benutzen kann.</p>
         </div>
-        <div class="slide-counter">03 / 17</div>
+        <div class="slide-counter">05 / 18</div>
     </section>
 
     <!-- ===========================================
-         FOLIE 4: PROJECT GLASSWING
+         FOLIE 6: METR TASK-HORIZONTE
          =========================================== -->
-    <section class="slide slide-divider" data-slide="4" id="slideGlasswing">
-        <div class="geo-circle" style="top: clamp(3rem, 10vh, 8rem); right: clamp(3rem, 8vw, 8rem); width: clamp(60px, 9vw, 130px); height: clamp(60px, 9vw, 130px);"></div>
+    <section class="slide" data-slide="6" id="slideMETR">
+        <div class="geo-line" style="top: clamp(3rem, 8vh, 6rem); right: clamp(3rem, 6vw, 6rem); width: clamp(50px, 8vw, 120px);"></div>
+        <div class="geo-dot" style="top: clamp(2.5rem, 7.5vh, 5.5rem); right: calc(clamp(3rem, 6vw, 6rem) + clamp(60px, 9vw, 130px));"></div>
         <div class="slide-content">
-            <p class="eyebrow reveal">April 2026</p>
-            <h2 class="reveal">Project Glasswing</h2>
-            <div class="glasswing-chart-grid reveal">
-                <div class="chart-card" data-label="Verborgene Bugs">
-                    <div class="chart-container-editorial" role="img" aria-label="Balkendiagramm zeigt 27 Jahre alte OpenBSD-Schwachstelle und 16 Jahre alte FFmpeg-Schwachstelle">
-                        <canvas id="bugAgeChart"></canvas>
-                    </div>
-                    <p class="chart-insight">Claude fand, was Menschen jahrzehntelang &uuml;bersahen</p>
-                </div>
-                <div class="chart-card" data-label="CTF-Erfolgsquote">
-                    <div class="chart-container-editorial" role="img" aria-label="Kreisdiagramm zeigt 73% Erfolgsquote bei CTF-Aufgaben auf Expertenniveau">
-                        <canvas id="ctfChart"></canvas>
-                    </div>
-                    <p class="chart-insight">UK AI Security Institute &bull; Expertenniveau</p>
-                </div>
+            <p class="eyebrow reveal">METR &bull; Task-Zeithorizonte</p>
+            <h2 class="reveal">Was KI-Agenten<br><em style="font-weight: 400;">heute schon k&ouml;nnen</em></h2>
+            <div class="metr-chart-container reveal" role="img" aria-label="Exponentialdiagramm: KI-Agenten schaffen 2020 nur 9-Sekunden-Aufgaben, 2025 bereits 2-Stunden-Aufgaben, Projektion 2027 monatelange Aufgaben">
+                <canvas id="metrChart"></canvas>
             </div>
-            <p class="reveal" style="margin-top: var(--element-gap); font-size: var(--small-size); color: rgba(245,243,238,0.4);">Nicht &ouml;ffentlich verf&uuml;gbar, nur f&uuml;r Launch-Partner: AWS, Apple, Google, Microsoft</p>
+            <p class="metr-source reveal">Quelle: METR &mdash; metr.org/time-horizons &bull; Verdopplung alle ~7 Monate, zuletzt alle 4 Monate</p>
         </div>
-        <div class="slide-counter">04 / 17</div>
-    </section>
-
-    <!-- ===========================================
-         FOLIE 5: DAS SOURCE-LEAK
-         =========================================== -->
-    <section class="slide slide-divider" data-slide="5">
-        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 10vw, 150px);"></div>
-        <div class="geo-dot" style="bottom: clamp(3.5rem, 9.5vh, 7.5rem); left: calc(clamp(3rem, 6vw, 6rem) + clamp(70px, 11vw, 160px));"></div>
-        <div class="slide-content">
-            <p class="eyebrow reveal">1. April 2026</p>
-            <h2 class="reveal">Das Source-Leak</h2>
-            <hr class="editorial-hr reveal">
-            <ul class="editorial-list reveal">
-                <li>
-                    <span class="list-marker">1</span>
-                    <span>Ein Packaging-Fehler legte <strong>512.000 Zeilen</strong> TypeScript offen</span>
-                </li>
-                <li>
-                    <span class="list-marker">2</span>
-                    <span>&Uuml;ber 41.500 Mal gespiegelt, schnellstes GitHub-Repo mit <strong>50K Stars</strong> aller Zeiten</span>
-                </li>
-                <li>
-                    <span class="list-marker">3</span>
-                    <span>Zum Vorschein kam <strong>KAIROS</strong>, ein permanent aktiver Hintergrund-Agent</span>
-                </li>
-                <li>
-                    <span class="list-marker">4</span>
-                    <span>Kommende Features: konversations&uuml;bergreifendes Ged&auml;chtnis, Multi-Agent-Kollaboration</span>
-                </li>
-            </ul>
-        </div>
-        <div class="slide-counter">05 / 17</div>
+        <div class="slide-counter">06 / 18</div>
     </section>
 
     <!-- ===========================================
          FOLIE 6: SECTION BREAK
          =========================================== -->
     <section class="slide" data-slide="6">
-        <div class="geo-circle" style="bottom: clamp(5rem, 12vh, 10rem); right: clamp(4rem, 10vw, 10rem); width: clamp(100px, 15vw, 200px); height: clamp(100px, 15vw, 200px);"></div>
-        <div class="slide-content" style="text-align: center; align-items: center;">
-            <p class="eyebrow reveal">Teil Zwei</p>
-            <h1 class="reveal">Wie Claude Code<br><em style="font-weight: 400; font-style: italic; font-size: clamp(1.4rem, 4vw, 3.2rem); color: var(--text-secondary);">wirklich funktioniert</em></h1>
+        <div class="slide-content" style="text-align: center; align-items: center; flex-direction: row; justify-content: center; gap: clamp(2rem, 5vw, 5rem); flex-wrap: wrap;">
+            <div style="flex-shrink: 0;">
+                <p class="eyebrow reveal">Teil Zwei</p>
+                <h1 class="reveal">Wie Claude Code<br><em style="font-weight: 400; font-style: italic; font-size: clamp(1.4rem, 4vw, 3.2rem); color: var(--text-secondary);">wirklich funktioniert</em></h1>
+            </div>
+            <div class="concentric-wrap reveal">
+                <div class="concentric-ring ring-llm">
+                    <span class="ring-label">LLM</span>
+                </div>
+                <div class="concentric-ring ring-agent">
+                    <span class="ring-label">Agent (OS)</span>
+                </div>
+                <div class="concentric-ring ring-skills">
+                    <span class="ring-label">Skills (Apps)</span>
+                </div>
+            </div>
         </div>
-        <div class="slide-counter">06 / 17</div>
+        <div class="slide-counter">07 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -425,8 +471,9 @@
                 </div>
             </div>
             <p class="reveal" style="margin-top: var(--content-gap);">Das ist kein Autocomplete. Claude sagt nicht eure n&auml;chste Zeile voraus. Es <strong>denkt &uuml;ber euer Problem nach</strong>, probiert L&ouml;sungen aus und korrigiert sich selbst.</p>
+            <p class="reveal" style="margin-top: var(--element-gap); font-size: var(--small-size); color: var(--text-muted);">ampcode.com/how-to-build-an-agent &bull; mihaileric.com/The-Emperor-Has-No-Clothes</p>
         </div>
-        <div class="slide-counter">07 / 17</div>
+        <div class="slide-counter">08 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -448,7 +495,7 @@
                 </div>
             </div>
         </div>
-        <div class="slide-counter">08 / 17</div>
+        <div class="slide-counter">09 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -462,7 +509,7 @@
             <h1 class="reveal">CLAUDE.md</h1>
             <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.3rem, 3.5vw, 2.8rem); color: rgba(245, 243, 238, 0.6); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Das Gehirn deines Projekts</h1>
         </div>
-        <div class="slide-counter">09 / 17</div>
+        <div class="slide-counter">10 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -496,7 +543,7 @@
                 </li>
             </ul>
         </div>
-        <div class="slide-counter">10 / 17</div>
+        <div class="slide-counter">11 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -522,7 +569,7 @@
                 </div>
             </div>
         </div>
-        <div class="slide-counter">11 / 17</div>
+        <div class="slide-counter">12 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -548,7 +595,7 @@
                 </div>
             </div>
         </div>
-        <div class="slide-counter">12 / 17</div>
+        <div class="slide-counter">13 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -562,7 +609,7 @@
             <h1 class="reveal">Skills</h1>
             <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.3rem, 3.5vw, 2.8rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Modulare Workflows</h1>
         </div>
-        <div class="slide-counter">13 / 17</div>
+        <div class="slide-counter">14 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -593,7 +640,7 @@
                 </li>
             </ul>
         </div>
-        <div class="slide-counter">14 / 17</div>
+        <div class="slide-counter">15 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -630,7 +677,7 @@
                 <li>Make changes doing minimal essential changes</li>
             </ul>
         </div>
-        <div class="slide-counter">15 / 17</div>
+        <div class="slide-counter">16 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -676,7 +723,7 @@
                 </div>
             </div>
         </div>
-        <div class="slide-counter">16 / 17</div>
+        <div class="slide-counter">17 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -711,7 +758,7 @@
                 </li>
             </ul>
         </div>
-        <div class="slide-counter">17 / 17</div>
+        <div class="slide-counter">18 / 18</div>
     </section>
 
     <!-- ===========================================
@@ -815,9 +862,159 @@
             chartsBuilt = true;
         }
 
+        // ===========================================
+        // CHART.JS — METR Time Horizons (Slide 5b)
+        // ===========================================
+        var metrChartBuilt = false;
+        function buildMETRChart() {
+            if (metrChartBuilt) return;
+            if (typeof Chart === 'undefined') return;
+            var textColor = 'var(--text-secondary)';
+            var terracotta = '#c1664a';
+            var warm = '#e8d4c0';
+            var gridColor = 'rgba(26, 26, 26, 0.06)';
+
+            var metrCtx = document.getElementById('metrChart');
+            if (!metrCtx) return;
+
+            var style = getComputedStyle(document.documentElement);
+            var txtCol = style.getPropertyValue('--text-secondary').trim() || '#555';
+            var txtPrimary = style.getPropertyValue('--text-primary').trim() || '#1a1a1a';
+
+            /* Linear Y-axis to show the true exponential hockey stick */
+            /* Values in hours for readability */
+            new Chart(metrCtx, {
+                type: 'line',
+                data: {
+                    labels: ['2019', '2020', '2022', '2023', '2024', '', '', '2025', '2026', '2027'],
+                    datasets: [
+                        {
+                            label: 'Gemessen',
+                            data: [0.001, 0.0025, 0.017, 0.067, 0.67, 1.5, 3, 2, 14.5, null],
+                            borderColor: terracotta,
+                            backgroundColor: terracotta,
+                            pointBackgroundColor: [terracotta, terracotta, terracotta, terracotta, terracotta, terracotta, terracotta, terracotta, terracotta, terracotta],
+                            pointRadius: [4, 5, 4, 6, 6, 4, 4, 6, 7, 0],
+                            pointHoverRadius: 9,
+                            borderWidth: 2.5,
+                            tension: 0.35,
+                            spanGaps: false
+                        },
+                        {
+                            label: 'Projektion',
+                            data: [null, null, null, null, null, null, null, null, 14.5, 720],
+                            borderColor: warm,
+                            backgroundColor: warm,
+                            pointBackgroundColor: warm,
+                            pointRadius: [0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
+                            pointHoverRadius: 10,
+                            borderWidth: 2.5,
+                            borderDash: [8, 4],
+                            tension: 0.35,
+                            spanGaps: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: false,
+                    layout: { padding: { top: 35, right: 25, bottom: 5, left: 5 } },
+                    plugins: {
+                        legend: {
+                            display: true, position: 'top', align: 'end',
+                            labels: { color: txtCol, font: { family: "'Work Sans', sans-serif", size: 12 }, boxWidth: 20, padding: 16 }
+                        },
+                        tooltip: {
+                            enabled: true, padding: 12, cornerRadius: 4,
+                            titleFont: { family: "'Fraunces', serif", size: 14, weight: 700 },
+                            bodyFont: { family: "'Work Sans', sans-serif", size: 13 },
+                            callbacks: {
+                                label: function(ctx) {
+                                    var v = ctx.raw;
+                                    if (v === null) return '';
+                                    if (v < 1/60) return 'Sekunden';
+                                    if (v < 1) return Math.round(v * 60) + ' Minuten';
+                                    if (v < 24) return '~' + v + ' Stunden';
+                                    return '~' + Math.round(v / 24) + ' Tage (~1 Monat)';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: txtCol, font: { family: "'Work Sans', sans-serif", size: 11, weight: 600 } },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            type: 'linear',
+                            min: 0,
+                            max: 760,
+                            ticks: {
+                                color: txtCol,
+                                font: { family: "'Work Sans', sans-serif", size: 10 },
+                                callback: function(v) {
+                                    if (v === 0) return '0';
+                                    if (v === 1) return '1 Std';
+                                    if (v === 24) return '1 Tag';
+                                    if (v === 168) return '1 Woche';
+                                    if (v === 720) return '1 Monat';
+                                    return '';
+                                },
+                                autoSkip: false
+                            },
+                            afterBuildTicks: function(axis) {
+                                axis.ticks = [0, 1, 24, 168, 720].map(function(v) { return { value: v }; });
+                            },
+                            grid: { color: function(ctx) { return ctx.tick && ctx.tick.value === 0 ? 'rgba(26,26,26,0.15)' : gridColor; } }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'dataLabels',
+                    afterDatasetsDraw: function(chart) {
+                        var ctx2 = chart.ctx;
+                        var fontBig = Math.max(10, Math.min(13, chart.width / 60));
+                        var fontSmall = Math.max(7, Math.min(10, chart.width / 85));
+                        var meta0 = chart.getDatasetMeta(0);
+                        var meta1 = chart.getDatasetMeta(1);
+
+                        /* Key labeled points: index, label, model, dataset */
+                        var keyPoints = [
+                            { di: 1, label: '9 Sek', model: 'GPT-3', ds: 0 },
+                            { di: 3, label: '4 Min', model: 'GPT-4', ds: 0 },
+                            { di: 4, label: '40 Min', model: 'Sonnet 3.5', ds: 0 },
+                            { di: 7, label: '~2 Std', model: 'Sonnet 3.7', ds: 0 },
+                            { di: 8, label: '~14.5 Std', model: 'Opus 4.6', ds: 0 },
+                            { di: 9, label: '~1 Mon', model: '', ds: 1 }
+                        ];
+
+                        ctx2.save();
+                        keyPoints.forEach(function(kp) {
+                            var meta = kp.ds === 0 ? meta0 : meta1;
+                            var pt = meta.data[kp.di];
+                            if (!pt) return;
+                            var isTop = kp.di >= 7;
+                            var yOff = isTop ? -22 : -18;
+                            ctx2.textAlign = 'center';
+                            ctx2.font = '700 ' + fontBig + 'px "Fraunces", serif';
+                            ctx2.fillStyle = kp.ds === 0 ? terracotta : warm;
+                            ctx2.fillText(kp.label, pt.x, pt.y + yOff);
+                            if (kp.model) {
+                                ctx2.font = '400 ' + fontSmall + 'px "Work Sans", sans-serif';
+                                ctx2.fillStyle = txtCol;
+                                ctx2.fillText(kp.model, pt.x, pt.y + yOff + 12);
+                            }
+                        });
+                        ctx2.restore();
+                    }
+                }]
+            });
+            metrChartBuilt = true;
+        }
+
         function triggerSlideCharts(index) {
             if (index === 1) animateGauges();
             if (index === 3) buildGlasswingCharts();
+            if (index === 5) buildMETRChart();
         }
 
         class SlidePresentation {
