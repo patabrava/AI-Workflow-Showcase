@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="de" class="theme-light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code: Der neue Standard</title>
+
+    <!-- Fonts: Fraunces (display) + Work Sans (body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>Chart.defaults.animation = false;</script>
+
+    <!-- html-to-image for PNG export -->
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (VINTAGE EDITORIAL)
+           =========================================== */
+        :root {
+            --bg-cream: #f5f3ee;
+            --bg-dark: #1a1a1a;
+            --text-primary: #1a1a1a;
+            --text-secondary: #555;
+            --text-muted: #888;
+            --accent-warm: #e8d4c0;
+            --accent-terracotta: #c1664a;
+            --accent-ink: #2c2c2c;
+            --border-color: #1a1a1a;
+
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Work Sans', sans-serif;
+            --title-size: clamp(2rem, 6vw, 5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.2vw, 1.5rem);
+            --body-size: clamp(0.75rem, 1.3vw, 1.05rem);
+            --small-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            --stat-size: clamp(2rem, 5vw, 4.5rem);
+
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.4rem, 1vw, 1rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.7s;
+        }
+
+        /* === SKELETON THEME CLASSES (evaluation compatibility) === */
+        .theme-light {
+            --bg: #f5f3ee; --surface: #ffffff; --surface-hover: #f0ede7;
+            --border: rgba(0,0,0,0.06);
+            --text: #1a1a1a; --text-secondary: #555;
+            --accent: #c1664a; --accent-secondary: #e8d4c0;
+            --positive: #059669; --negative: #e11d48; --warning: #d97706;
+        }
+        .theme-dark {
+            --bg: #0A0A0A; --surface: #141414; --surface-hover: #1C1C1C;
+            --border: rgba(255,255,255,0.04);
+            --text: #EDEDED; --text-secondary: #888;
+            --accent: #d4836b; --accent-secondary: #e8d4c0;
+            --positive: #10b981; --negative: #f43f5e; --warning: #f59e0b;
+        }
+
+        /* ===========================================
+           BASE STYLES
+           =========================================== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+        .slide {
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .slide-content {
+            flex: 1; display: flex; flex-direction: column; justify-content: center;
+            max-height: 100%; overflow: hidden; padding: var(--slide-padding);
+        }
+        .card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+        .feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+        .feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: clamp(0.5rem, 1.5vw, 1rem); }
+        img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+
+        @media (max-height: 700px) {
+            :root { --slide-padding: clamp(0.75rem, 3vw, 2rem); --content-gap: clamp(0.4rem, 1.5vw, 1rem); --title-size: clamp(1.25rem, 4.5vw, 2.5rem); --h2-size: clamp(1rem, 3vw, 1.75rem); }
+        }
+        @media (max-height: 600px) {
+            :root { --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem); --content-gap: clamp(0.3rem, 1vw, 0.75rem); --title-size: clamp(1.1rem, 4vw, 2rem); --body-size: clamp(0.7rem, 1.2vw, 0.95rem); }
+            .nav-dots, .keyboard-hint, .decorative { display: none; }
+        }
+        @media (max-height: 500px) {
+            :root { --slide-padding: clamp(0.4rem, 2vw, 1rem); --title-size: clamp(1rem, 3.5vw, 1.5rem); --h2-size: clamp(0.9rem, 2.5vw, 1.25rem); --body-size: clamp(0.65rem, 1vw, 0.85rem); }
+        }
+        @media (max-width: 600px) {
+            :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+            .grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 375px) {
+            body { overflow-x: hidden; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+            html { scroll-behavior: auto; }
+        }
+
+        /* ===========================================
+           VINTAGE EDITORIAL THEME
+           =========================================== */
+        body { font-family: var(--font-body); color: var(--text-primary); background: var(--bg-cream); }
+        .slide { background: var(--bg-cream); position: relative; }
+
+        h1, h2, h3 { font-family: var(--font-display); }
+        h1 { font-size: var(--title-size); font-weight: 900; line-height: 1.05; }
+        h2 { font-size: var(--h2-size); font-weight: 700; line-height: 1.15; margin-bottom: var(--content-gap); }
+        h3 { font-size: var(--h3-size); font-weight: 600; line-height: 1.3; }
+        p, li { font-size: var(--body-size); line-height: 1.6; color: var(--text-secondary); }
+
+        /* === GEOMETRIC DECORATIONS === */
+        .geo-circle { position: absolute; border: 2px solid var(--text-primary); border-radius: 50%; opacity: 0; transition: opacity 0.8s ease, transform 0.8s var(--ease-out-expo); transform: scale(0.8); }
+        .visible .geo-circle { opacity: 1; transform: scale(1); }
+        .geo-line { position: absolute; height: 2px; background: var(--text-primary); opacity: 0; transition: opacity 0.6s ease 0.2s, transform 0.6s var(--ease-out-expo) 0.2s; transform: scaleX(0); transform-origin: left; }
+        .visible .geo-line { opacity: 1; transform: scaleX(1); }
+        .geo-dot { position: absolute; width: clamp(6px, 0.8vw, 10px); height: clamp(6px, 0.8vw, 10px); background: var(--text-primary); border-radius: 50%; opacity: 0; transition: opacity 0.5s ease 0.4s; }
+        .visible .geo-dot { opacity: 1; }
+
+        /* === REVEAL ANIMATIONS === */
+        .reveal { opacity: 0; transform: translateY(25px); transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+
+        /* === ENTRANCE ANIMATIONS === */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate { animation: fadeInUp 0.6s ease-out both; }
+        .animate.delay-1 { animation-delay: 0.1s; }
+        .animate.delay-2 { animation-delay: 0.2s; }
+        .animate.delay-3 { animation-delay: 0.3s; }
+
+        .eyebrow { font-family: var(--font-body); font-size: var(--small-size); font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: clamp(0.8rem, 2vh, 1.5rem); }
+
+        /* === SECTION DIVIDER === */
+        .slide-divider { background: var(--bg-dark); color: var(--bg-cream); }
+        .slide-divider h2 { color: var(--bg-cream); }
+        .slide-divider p,
+        .slide-divider li,
+        .slide-divider li span,
+        .slide-divider li strong,
+        .slide-divider .stat-label { color: rgba(245, 243, 238, 0.75); }
+        .slide-divider li strong { color: rgba(245, 243, 238, 0.95); }
+        .slide-divider .eyebrow { color: var(--accent-warm); }
+        .slide-divider .geo-circle { border-color: rgba(245, 243, 238, 0.2); }
+        .slide-divider .geo-line { background: rgba(245, 243, 238, 0.2); }
+        .slide-divider .geo-dot { background: rgba(245, 243, 238, 0.3); }
+
+        /* === STATS === */
+        .stat-number { font-family: var(--font-display); font-size: var(--stat-size); font-weight: 900; color: var(--text-primary); line-height: 1; }
+        .stat-label { font-size: var(--body-size); color: var(--text-muted); margin-top: clamp(0.3rem, 0.5vh, 0.6rem); }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 3vw, 3rem); text-align: center; margin-top: var(--content-gap); }
+        @media (max-width: 600px) { .stat-grid { grid-template-columns: 1fr; } }
+
+        /* === BORDERED BOX === */
+        .bordered-box { border: 2px solid var(--border-color); padding: clamp(1rem, 2.5vw, 2rem); position: relative; }
+        .bordered-box::before { content: attr(data-label); position: absolute; top: calc(-1 * clamp(0.4rem, 0.7vw, 0.6rem)); left: clamp(0.8rem, 2vw, 1.5rem); background: var(--bg-cream); padding: 0 clamp(0.3rem, 0.5vw, 0.5rem); font-size: var(--small-size); font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+        .slide-divider .bordered-box { border-color: rgba(245, 243, 238, 0.3); }
+        .slide-divider .bordered-box::before { background: var(--bg-dark); color: var(--accent-warm); }
+
+        /* === PRINCIPLE CARD === */
+        .principle { display: flex; gap: clamp(1rem, 2vw, 2rem); align-items: flex-start; margin-top: var(--content-gap); }
+        .principle-num { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 900; color: var(--accent-warm); line-height: 1; flex-shrink: 0; }
+        .principle-content h3 { margin-bottom: clamp(0.3rem, 0.6vh, 0.5rem); }
+
+        /* === QUOTE === */
+        .quote-text { font-family: var(--font-display); font-style: italic; font-size: clamp(1.3rem, 3vw, 2.5rem); font-weight: 400; line-height: 1.35; color: var(--text-primary); }
+
+        /* === LIST STYLES === */
+        .editorial-list { list-style: none; margin-top: var(--content-gap); }
+        .editorial-list li { padding: clamp(0.5rem, 1vh, 0.8rem) 0; border-bottom: 1px solid rgba(26, 26, 26, 0.1); display: flex; gap: clamp(0.5rem, 1vw, 1rem); align-items: baseline; }
+        .editorial-list li:last-child { border-bottom: none; }
+        .list-marker { font-family: var(--font-display); font-weight: 900; color: var(--accent-terracotta); font-size: var(--body-size); flex-shrink: 0; min-width: clamp(1.2rem, 2vw, 1.8rem); }
+        .slide-divider .editorial-list li { border-bottom-color: rgba(245, 243, 238, 0.1); }
+
+        /* === AGENT LOOP DIAGRAM === */
+        .loop-diagram { display: flex; align-items: center; justify-content: center; gap: clamp(0.3rem, 0.8vw, 0.8rem); margin-top: var(--content-gap); flex-wrap: wrap; }
+        .loop-step { border: 2px solid var(--border-color); padding: clamp(0.5rem, 1vw, 1rem) clamp(0.8rem, 1.5vw, 1.5rem); font-family: var(--font-display); font-size: clamp(0.7rem, 1.2vw, 1rem); font-weight: 700; }
+        .loop-arrow { font-size: clamp(0.8rem, 1.5vw, 1.2rem); color: var(--text-muted); }
+
+        /* === TWO COLUMN === */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 4vw, 4rem); align-items: start; margin-top: var(--content-gap); }
+        @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+        /* === CHECKLIST === */
+        .checklist { list-style: none; margin-top: var(--content-gap); }
+        .checklist li { padding: clamp(0.6rem, 1.2vh, 1rem) 0; border-bottom: 1px solid rgba(26, 26, 26, 0.1); display: flex; gap: clamp(0.6rem, 1vw, 1rem); align-items: flex-start; }
+        .checklist li:last-child { border-bottom: none; }
+        .check-num { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.2rem, 2vw, 1.8rem); color: var(--accent-terracotta); line-height: 1; flex-shrink: 0; min-width: clamp(1.5rem, 2.5vw, 2.5rem); }
+        .check-content h3 { margin-bottom: clamp(0.1rem, 0.3vh, 0.3rem); }
+        .check-content p { font-size: var(--small-size); }
+
+        /* === RESOURCE COMMANDS === */
+        .resource-list { list-style: none; margin-top: var(--content-gap); }
+        .resource-list li { padding: clamp(0.5rem, 1vh, 0.8rem) 0; border-bottom: 1px solid rgba(26, 26, 26, 0.1); }
+        .resource-list li:last-child { border-bottom: none; }
+        .resource-label { font-size: var(--small-size); font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: clamp(0.2rem, 0.4vh, 0.4rem); }
+        .resource-cmd { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace; font-size: clamp(0.65rem, 1.1vw, 0.9rem); color: var(--text-primary); background: rgba(26, 26, 26, 0.06); padding: clamp(0.3rem, 0.5vw, 0.5rem) clamp(0.5rem, 1vw, 0.8rem); border-radius: 4px; display: inline-block; }
+        .slide-divider .resource-list li { border-bottom-color: rgba(245, 243, 238, 0.1); }
+        .slide-divider .resource-cmd { color: rgba(245, 243, 238, 0.9); background: rgba(245, 243, 238, 0.08); }
+
+        /* === PROGRESS BAR === */
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent-terracotta); z-index: 9999; transition: width 0.3s ease; width: 0%; }
+
+        /* === NAV DOTS === */
+        .nav-dots { position: fixed; right: clamp(1rem, 2vw, 2rem); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: clamp(6px, 0.8vh, 10px); z-index: 9998; }
+        .nav-dot { width: clamp(6px, 0.6vw, 8px); height: clamp(6px, 0.6vw, 8px); border-radius: 50%; background: rgba(26, 26, 26, 0.15); cursor: pointer; transition: background 0.3s, transform 0.3s; border: none; padding: 0; }
+        .nav-dot.active { background: var(--accent-terracotta); transform: scale(1.4); }
+
+        .editorial-hr { width: clamp(40px, 6vw, 80px); height: 2px; background: var(--text-primary); border: none; margin: clamp(0.8rem, 1.5vh, 1.5rem) 0; }
+        .slide-divider .editorial-hr { background: var(--accent-warm); }
+
+        .slide-counter { position: absolute; bottom: clamp(1rem, 3vh, 2rem); right: clamp(1.5rem, 3vw, 3rem); font-size: var(--small-size); color: var(--text-muted); font-weight: 500; letter-spacing: 0.1em; }
+        .slide-divider .slide-counter { color: rgba(245, 243, 238, 0.3); }
+
+        /* === EDIT MODE === */
+        .edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+        .edit-toggle { position: fixed; top: clamp(0.8rem, 2vh, 1.5rem); left: clamp(0.8rem, 2vw, 1.5rem); background: var(--bg-dark); color: var(--bg-cream); border: none; width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); border-radius: 50%; font-size: clamp(14px, 1.5vw, 18px); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 10001; }
+        .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+        .edit-banner { position: fixed; top: 0; left: 0; right: 0; background: var(--accent-terracotta); color: white; text-align: center; padding: clamp(0.3rem, 0.5vh, 0.5rem); font-size: var(--small-size); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .edit-banner.active { opacity: 1; }
+        body.edit-active [contenteditable] { outline: 1px dashed rgba(193, 102, 74, 0.4); outline-offset: 4px; cursor: text; }
+
+        /* ===========================================
+           CHART SLIDE STYLES (VINTAGE EDITORIAL)
+           =========================================== */
+
+        /* --- SLIDE 2: Radial Gauges --- */
+        .gauge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(1rem, 3vw, 3rem);
+            text-align: center;
+            margin-top: var(--content-gap);
+            align-items: start;
+        }
+        @media (max-width: 600px) { .gauge-grid { grid-template-columns: 1fr; } }
+
+        .gauge-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gauge-ring {
+            position: relative;
+            width: clamp(100px, 14vw, 180px);
+            height: clamp(100px, 14vw, 180px);
+        }
+        .gauge-ring svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        .gauge-ring .gauge-bg {
+            fill: none;
+            stroke: rgba(26, 26, 26, 0.08);
+            stroke-width: 6;
+        }
+        .gauge-ring .gauge-fill {
+            fill: none;
+            stroke: var(--accent-terracotta);
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 1.5s var(--ease-out-expo);
+        }
+        .gauge-ring .gauge-fill.animated {
+            /* offset set by JS */
+        }
+        .gauge-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 3.5vw, 3rem);
+            font-weight: 900;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        .gauge-label {
+            font-size: var(--body-size);
+            color: var(--text-muted);
+            margin-top: clamp(0.5rem, 1vh, 1rem);
+            max-width: 200px;
+        }
+
+        /* --- SLIDE 4: Chart containers (editorial style) --- */
+        .glasswing-chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(1rem, 3vw, 3rem);
+            margin-top: var(--content-gap);
+            align-items: start;
+        }
+        @media (max-width: 700px) { .glasswing-chart-grid { grid-template-columns: 1fr; } }
+
+        .chart-card {
+            border: 2px solid rgba(245, 243, 238, 0.15);
+            padding: clamp(1rem, 2vw, 1.5rem);
+            position: relative;
+        }
+        .chart-card::before {
+            content: attr(data-label);
+            position: absolute;
+            top: calc(-1 * clamp(0.4rem, 0.7vw, 0.6rem));
+            left: clamp(0.8rem, 2vw, 1.5rem);
+            background: var(--bg-dark);
+            padding: 0 clamp(0.3rem, 0.5vw, 0.5rem);
+            font-size: var(--small-size);
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-warm);
+        }
+        .chart-container-editorial {
+            height: clamp(160px, 22vh, 280px);
+            position: relative;
+        }
+        .chart-insight {
+            font-family: var(--font-display);
+            font-size: var(--body-size);
+            color: rgba(245, 243, 238, 0.6);
+            font-style: italic;
+            margin-top: clamp(0.5rem, 1vh, 0.8rem);
+        }
+
+        /* === MENU (matching skeleton requirements) === */
+        .viz-menu { position: fixed; top: 16px; right: 60px; z-index: 9997; }
+        .viz-menu-toggle {
+            width: 36px; height: 36px; border-radius: 8px;
+            background: rgba(26, 26, 26, 0.06); border: 1px solid rgba(26, 26, 26, 0.1);
+            color: var(--text-primary); cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(12px); transition: all 0.2s;
+        }
+        .viz-menu-toggle:hover { background: rgba(26, 26, 26, 0.12); }
+        .viz-menu-dropdown {
+            position: absolute; top: 44px; right: 0; min-width: 180px;
+            background: var(--bg-cream); border: 1px solid rgba(26, 26, 26, 0.1);
+            border-radius: 8px; padding: 6px;
+            opacity: 0; visibility: hidden; transform: translateY(-8px);
+            transition: all 0.2s; backdrop-filter: blur(16px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+        .viz-menu-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .viz-menu-dropdown button {
+            width: 100%; padding: 8px 12px; border: none; border-radius: 6px;
+            background: transparent; color: var(--text-primary); font-size: var(--small-size);
+            font-family: var(--font-body); cursor: pointer; text-align: left;
+            display: flex; align-items: center; gap: 8px; transition: background 0.15s;
+        }
+        .viz-menu-dropdown button:hover { background: rgba(26, 26, 26, 0.06); }
+
+        /* === PRINT === */
+        @media print {
+            body { background: white !important; color: black !important; }
+            .viz-menu, .nav-dots, .progress-bar, .edit-hotzone, .edit-toggle, .edit-banner { display: none !important; }
+            .reveal { opacity: 1 !important; transform: none !important; }
+            .slide { break-inside: avoid; height: auto; min-height: 100vh; }
+        }
+        @page { margin: 0.5in; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:10000;padding:8px 16px;background:var(--accent-terracotta);color:white;text-decoration:none;border-radius:4px;" onfocus="this.style.cssText='position:fixed;left:16px;top:16px;z-index:10000;padding:8px 16px;background:var(--accent-terracotta);color:white;text-decoration:none;border-radius:4px;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;'">Zum Inhalt springen</a>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots" aria-label="Foliennavigation"></nav>
+    <div class="edit-hotzone" id="editHotzone"></div>
+    <button class="edit-toggle" id="editToggle" title="Bearbeitungsmodus (E)">&#9998;</button>
+    <div class="edit-banner" id="editBanner">Bearbeitungsmodus &mdash; Text anklicken zum Bearbeiten &bull; Strg+S zum Speichern</div>
+
+    <!-- MENU -->
+    <div class="viz-menu">
+        <button class="viz-menu-toggle" onclick="toggleMenu()" aria-label="Menu">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/>
+            </svg>
+        </button>
+        <div class="viz-menu-dropdown" id="vizMenuDropdown">
+            <button onclick="downloadImage()"><span>PNG</span></button>
+            <button onclick="window.print()"><span>Drucken / PDF</span></button>
+        </div>
+    </div>
+
+    <main id="main-content" role="main">
+
+    <!-- ===========================================
+         FOLIE 1: TITEL
+         =========================================== -->
+    <section class="slide" data-slide="1">
+        <div class="geo-circle" style="top: clamp(2rem, 8vh, 6rem); right: clamp(2rem, 8vw, 8rem); width: clamp(80px, 12vw, 160px); height: clamp(80px, 12vw, 160px);"></div>
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 10vw, 140px);"></div>
+        <div class="geo-dot" style="bottom: clamp(3.5rem, 9.5vh, 7.5rem); left: calc(clamp(3rem, 6vw, 6rem) + clamp(70px, 11vw, 150px));"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Developer Session &bull; 2026</p>
+            <h1 class="reveal">Claude Code</h1>
+            <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.4rem, 4vw, 3.2rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Der neue Standard</h1>
+            <hr class="editorial-hr reveal" style="margin: clamp(1rem, 2vh, 2rem) auto;">
+            <p class="reveal" style="max-width: min(70vw, 500px);">Wie KI-Agenten die Regeln der Softwareentwicklung neu schreiben</p>
+        </div>
+        <div class="slide-counter">01 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 2: DIE ZAHLEN — RADIAL GAUGES
+         =========================================== -->
+    <section class="slide" data-slide="2" id="slideGauges">
+        <div class="geo-circle" style="bottom: clamp(3rem, 8vh, 7rem); right: clamp(2rem, 5vw, 5rem); width: clamp(50px, 7vw, 100px); height: clamp(50px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Status Quo</p>
+            <h2 class="reveal">KI schreibt bereits<br><em style="font-weight: 400;">die H&auml;lfte des Codes</em></h2>
+            <div class="gauge-grid reveal">
+                <div class="gauge-item">
+                    <div class="gauge-ring">
+                        <svg viewBox="0 0 100 100" role="img" aria-label="51% des GitHub-Codes ist KI-generiert">
+                            <circle class="gauge-bg" cx="50" cy="50" r="45"/>
+                            <circle class="gauge-fill" id="gauge1" cx="50" cy="50" r="45" data-percent="51"/>
+                        </svg>
+                        <span class="gauge-value" data-count="51" data-suffix="%">0%</span>
+                    </div>
+                    <div class="gauge-label">des GitHub-Codes ist KI-generiert oder KI-unterst&uuml;tzt</div>
+                </div>
+                <div class="gauge-item">
+                    <div class="gauge-ring">
+                        <svg viewBox="0 0 100 100" role="img" aria-label="275 Millionen Commits pro Woche">
+                            <circle class="gauge-bg" cx="50" cy="50" r="45"/>
+                            <circle class="gauge-fill" id="gauge2" cx="50" cy="50" r="45" data-percent="85" style="stroke: var(--accent-warm);"/>
+                        </svg>
+                        <span class="gauge-value" style="font-size: clamp(1.2rem, 2.8vw, 2.2rem);" data-count="275" data-suffix="M">0M</span>
+                    </div>
+                    <div class="gauge-label">Commits pro Woche auf GitHub</div>
+                </div>
+                <div class="gauge-item">
+                    <div class="gauge-ring">
+                        <svg viewBox="0 0 100 100" role="img" aria-label="60% mehr PRs von KI-Nutzern">
+                            <circle class="gauge-bg" cx="50" cy="50" r="45"/>
+                            <circle class="gauge-fill" id="gauge3" cx="50" cy="50" r="45" data-percent="60"/>
+                        </svg>
+                        <span class="gauge-value" data-count="60" data-suffix="%">0%</span>
+                    </div>
+                    <div class="gauge-label">mehr PRs gemergt von t&auml;glichen KI-Nutzern</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">02 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 3: DIE EVOLUTION
+         =========================================== -->
+    <section class="slide" data-slide="3">
+        <div class="geo-circle" style="top: clamp(5rem, 15vh, 10rem); left: clamp(2rem, 5vw, 5rem); width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px);"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="eyebrow reveal">Die Entwicklung</p>
+            <h2 class="reveal" style="margin-bottom: clamp(1.5rem, 3vh, 3rem);">Die drei Stufen</h2>
+            <div class="loop-diagram reveal">
+                <div class="loop-step">Coding</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Tool Use</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Computer Use</div>
+            </div>
+            <hr class="editorial-hr reveal" style="margin: clamp(1.5rem, 3vh, 3rem) auto;">
+            <p class="reveal" style="max-width: min(70vw, 550px);">KI wird nicht nur durch bessere Modelle leistungsf&auml;higer, sondern vor allem durch <strong>bessere Werkzeuge</strong>. Die Modelle werden nicht schlauer. Sie bekommen bessere Tools.</p>
+        </div>
+        <div class="slide-counter">03 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 4: PROJECT GLASSWING — WITH CHARTS
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="4" id="slideGlasswing">
+        <div class="geo-circle" style="top: clamp(3rem, 10vh, 8rem); right: clamp(3rem, 8vw, 8rem); width: clamp(60px, 9vw, 130px); height: clamp(60px, 9vw, 130px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">April 2026</p>
+            <h2 class="reveal">Project Glasswing</h2>
+            <div class="glasswing-chart-grid reveal">
+                <!-- Left: Bug Age Horizontal Bar -->
+                <div class="chart-card" data-label="Verborgene Bugs">
+                    <div class="chart-container-editorial" role="img" aria-label="Balkendiagramm zeigt 27 Jahre alte OpenBSD-Schwachstelle und 16 Jahre alte FFmpeg-Schwachstelle">
+                        <canvas id="bugAgeChart"></canvas>
+                    </div>
+                    <p class="chart-insight">Claude fand, was Menschen jahrzehntelang &uuml;bersahen</p>
+                </div>
+                <!-- Right: CTF Success Doughnut -->
+                <div class="chart-card" data-label="CTF-Erfolgsquote">
+                    <div class="chart-container-editorial" role="img" aria-label="Kreisdiagramm zeigt 73% Erfolgsquote bei CTF-Aufgaben auf Expertenniveau">
+                        <canvas id="ctfChart"></canvas>
+                    </div>
+                    <p class="chart-insight">UK AI Security Institute &mdash; Expertenniveau</p>
+                </div>
+            </div>
+            <p class="reveal" style="margin-top: var(--element-gap); font-size: var(--small-size); color: rgba(245,243,238,0.4);">Nicht &ouml;ffentlich verf&uuml;gbar &mdash; nur f&uuml;r Launch-Partner: AWS, Apple, Google, Microsoft</p>
+        </div>
+        <div class="slide-counter">04 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 5: DAS SOURCE-LEAK
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="5">
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 10vw, 150px);"></div>
+        <div class="geo-dot" style="bottom: clamp(3.5rem, 9.5vh, 7.5rem); left: calc(clamp(3rem, 6vw, 6rem) + clamp(70px, 11vw, 160px));"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">1. April 2026</p>
+            <h2 class="reveal">Das Source-Leak</h2>
+            <hr class="editorial-hr reveal">
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Ein Packaging-Fehler legte <strong>512.000 Zeilen</strong> TypeScript offen</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span>&Uuml;ber 41.500 Mal gespiegelt, schnellstes GitHub-Repo mit <strong>50K Stars</strong> aller Zeiten</span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span>Zum Vorschein kam <strong>KAIROS</strong>, ein permanent aktiver Hintergrund-Agent</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Kommende Features: konversations&uuml;bergreifendes Ged&auml;chtnis, Multi-Agent-Kollaboration</span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">05 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 6: SECTION BREAK
+         =========================================== -->
+    <section class="slide" data-slide="6">
+        <div class="geo-circle" style="bottom: clamp(5rem, 12vh, 10rem); right: clamp(4rem, 10vw, 10rem); width: clamp(100px, 15vw, 200px); height: clamp(100px, 15vw, 200px);"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Teil Zwei</p>
+            <h1 class="reveal">Wie Claude Code<br><em style="font-weight: 400; font-style: italic; font-size: clamp(1.4rem, 4vw, 3.2rem); color: var(--text-secondary);">wirklich funktioniert</em></h1>
+        </div>
+        <div class="slide-counter">06 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 7: DAS HARNESS-MODELL
+         =========================================== -->
+    <section class="slide" data-slide="7">
+        <div class="geo-dot" style="top: clamp(3rem, 8vh, 6rem); right: clamp(4rem, 8vw, 8rem);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Agent-Architektur</p>
+            <h2 class="reveal">Das Harness-Modell</h2>
+            <div class="bordered-box reveal" data-label="Der Loop" style="margin-top: var(--content-gap);">
+                <p style="margin-bottom: var(--element-gap);">Tools <strong>(read, list, write)</strong> liefern Kontext &rarr; das LLM erkennt Probleme und nimmt &Auml;nderungen vor &rarr; bekommt Feedback &rarr; iteriert weiter.</p>
+                <div class="loop-diagram" style="margin-top: var(--element-gap);">
+                    <div class="loop-step">Lesen</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step">Denken</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step">Handeln</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step">Feedback</div>
+                    <span class="loop-arrow">&rarr;</span>
+                    <div class="loop-step" style="border-color: var(--accent-terracotta); color: var(--accent-terracotta);">Wiederholen</div>
+                </div>
+            </div>
+            <p class="reveal" style="margin-top: var(--content-gap);">Das ist kein Autocomplete. Claude sagt nicht eure n&auml;chste Zeile voraus. Es <strong>denkt &uuml;ber euer Problem nach</strong>, probiert L&ouml;sungen aus und korrigiert sich selbst.</p>
+        </div>
+        <div class="slide-counter">07 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 8: KONTEXT IST ALLES
+         =========================================== -->
+    <section class="slide" data-slide="8">
+        <div class="geo-line" style="top: clamp(4rem, 10vh, 7rem); right: clamp(3rem, 6vw, 6rem); width: clamp(40px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Kernerkenntnis</p>
+            <h2 class="reveal">Der Loop ist nur so gut<br><em style="font-weight: 400;">wie der Kontext, den du ihm gibst</em></h2>
+            <div class="two-col reveal">
+                <div class="bordered-box" data-label="Wenig Kontext">
+                    <p>Einzeiler-Prompt, keine Projektinfos, keine Konventionen</p>
+                    <p style="margin-top: var(--element-gap); color: var(--accent-terracotta); font-weight: 600;">&rarr; Falsche Annahmen, falscher Stil, over-engineered</p>
+                </div>
+                <div class="bordered-box" data-label="Viel Kontext">
+                    <p>CLAUDE.md, klare Ziele, euer Stack und eure Konventionen</p>
+                    <p style="margin-top: var(--element-gap); color: var(--accent-terracotta); font-weight: 600;">&rarr; Code, der perfekt zu eurem Projekt passt</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">08 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 9: SECTION BREAK — CLAUDE.MD
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="9">
+        <div class="geo-circle" style="top: clamp(4rem, 10vh, 8rem); left: clamp(3rem, 6vw, 6rem); width: clamp(60px, 9vw, 120px); height: clamp(60px, 9vw, 120px);"></div>
+        <div class="geo-line" style="bottom: clamp(5rem, 12vh, 9rem); right: clamp(3rem, 6vw, 6rem); width: clamp(50px, 8vw, 120px);"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Teil Drei</p>
+            <h1 class="reveal">CLAUDE.md</h1>
+            <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.3rem, 3.5vw, 2.8rem); color: rgba(245, 243, 238, 0.6); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Das Gehirn deines Projekts</h1>
+        </div>
+        <div class="slide-counter">09 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 10: WAS IST CLAUDE.MD
+         =========================================== -->
+    <section class="slide" data-slide="10">
+        <div class="geo-dot" style="top: clamp(4rem, 10vh, 7rem); left: clamp(4rem, 8vw, 8rem);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Das Fundament</p>
+            <h2 class="reveal">Was ist CLAUDE.md?</h2>
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Eine Markdown-Datei <strong>im Root eures Repos</strong>, die Claude sagt, wie es sich in eurem Projekt verhalten soll</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span><strong>Versioniert</strong> im Repo. Euer ganzes Team teilt und reviewt sie in PRs</span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span><strong>Bleibt &uuml;ber Sessions bestehen.</strong> Einmal schreiben, Claude h&auml;lt sich immer dran</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Kein System-Prompt. Sie ist <strong>projektspezifisch</strong>, kombinierbar und lebt in eurer Codebase</span>
+                </li>
+                <li>
+                    <span class="list-marker">5</span>
+                    <span>Startet mit Karpathys Vorlage: <strong style="font-family: 'JetBrains Mono', monospace; font-size: clamp(0.6rem, 1vw, 0.85rem);">claude install-skill https://github.com/forrestchang/andrej-karpathy-skills</strong></span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">10 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 11: PRINZIPIEN 1 & 2
+         =========================================== -->
+    <section class="slide" data-slide="11">
+        <div class="geo-circle" style="bottom: clamp(3rem, 8vh, 6rem); right: clamp(3rem, 6vw, 6rem); width: clamp(40px, 6vw, 80px); height: clamp(40px, 6vw, 80px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">github.com/forrestchang/andrej-karpathy-skills</p>
+            <h2 class="reveal">So schreibt ihr eine gute CLAUDE.md-Datei</h2>
+            <div class="principle reveal">
+                <div class="principle-num">01</div>
+                <div class="principle-content">
+                    <h3>Erst denken, dann coden</h3>
+                    <p>&bdquo;Mehrdeutigkeiten explizit benennen. Mehrere Interpretationen pr&auml;sentieren, statt still eine zu w&auml;hlen.&ldquo;</p>
+                </div>
+            </div>
+            <div class="principle reveal">
+                <div class="principle-num">02</div>
+                <div class="principle-content">
+                    <h3>Einfachheit zuerst</h3>
+                    <p>Unn&ouml;tige Abstraktionen vermeiden. Der Test: W&uuml;rde ein Senior Engineer es als &uuml;berkompliziert bezeichnen?</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">11 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 12: PRINZIPIEN 3 & 4
+         =========================================== -->
+    <section class="slide" data-slide="12">
+        <div class="geo-line" style="top: clamp(3rem, 8vh, 6rem); left: clamp(3rem, 6vw, 6rem); width: clamp(40px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">github.com/forrestchang/andrej-karpathy-skills</p>
+            <h2 class="reveal">So schreibt ihr eine gute CLAUDE.md-Datei</h2>
+            <div class="principle reveal">
+                <div class="principle-num">03</div>
+                <div class="principle-content">
+                    <h3>Chirurgische &Auml;nderungen</h3>
+                    <p>Bestehenden Stil beibehalten. Jede ge&auml;nderte Zeile muss direkt auf die Anforderung zur&uuml;ckf&uuml;hrbar sein. Keine Refactors im Vorbeigehen.</p>
+                </div>
+            </div>
+            <div class="principle reveal">
+                <div class="principle-num">04</div>
+                <div class="principle-content">
+                    <h3>Zielorientierte Ausf&uuml;hrung</h3>
+                    <p>Vage Anforderungen in testbare Kriterien &uuml;bersetzen. Nicht &bdquo;mach es besser&ldquo; sagen, sondern klar definieren, wie &bdquo;fertig&ldquo; aussieht.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">12 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 13: SECTION BREAK — SKILLS
+         =========================================== -->
+    <section class="slide" data-slide="13">
+        <div class="geo-circle" style="top: clamp(4rem, 10vh, 8rem); right: clamp(4rem, 8vw, 8rem); width: clamp(70px, 10vw, 150px); height: clamp(70px, 10vw, 150px);"></div>
+        <div class="geo-dot" style="bottom: clamp(5rem, 12vh, 9rem); left: clamp(5rem, 10vw, 10rem);"></div>
+        <div class="slide-content" style="text-align: center; align-items: center;">
+            <p class="eyebrow reveal">Teil Vier</p>
+            <h1 class="reveal">Skills</h1>
+            <h1 class="reveal" style="font-weight: 400; font-style: italic; font-size: clamp(1.3rem, 3.5vw, 2.8rem); color: var(--text-secondary); margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Modulare Workflows</h1>
+        </div>
+        <div class="slide-counter">13 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 14: SKILLS ERKL&Auml;RT
+         =========================================== -->
+    <section class="slide" data-slide="14">
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 7rem); right: clamp(3rem, 6vw, 6rem); width: clamp(50px, 8vw, 120px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Code als Schnittstelle</p>
+            <h2 class="reveal">Was sind Skills?</h2>
+            <p class="reveal">Statt aufgabenspezifische Agenten zu bauen, behandelt Claude Code Code als <strong>&bdquo;Schnittstelle zur digitalen Welt&ldquo;</strong>. Ein universeller Agent, angereichert mit modularen Skills.</p>
+            <ul class="editorial-list reveal">
+                <li>
+                    <span class="list-marker">1</span>
+                    <span>Jeder Skill ist eine <strong>SKILL.md</strong>-Datei in einem Ordner, reines Markdown</span>
+                </li>
+                <li>
+                    <span class="list-marker">2</span>
+                    <span>Installieren: <strong>claude skills add mattpocock/skills/grill-me</strong></span>
+                </li>
+                <li>
+                    <span class="list-marker">3</span>
+                    <span>Ausf&uuml;hren: <strong>/grill-me</strong> in der Konversation eingeben</span>
+                </li>
+                <li>
+                    <span class="list-marker">4</span>
+                    <span>Eigene Skills schreiben dauert <strong>keine 10 Minuten</strong></span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">14 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 15: RESSOURCEN
+         =========================================== -->
+    <section class="slide slide-divider" data-slide="15">
+        <div class="geo-dot" style="top: clamp(4rem, 10vh, 7rem); right: clamp(4rem, 8vw, 8rem);"></div>
+        <div class="geo-line" style="bottom: clamp(4rem, 10vh, 7rem); left: clamp(3rem, 6vw, 6rem); width: clamp(50px, 8vw, 120px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Zum Ausprobieren</p>
+            <h2 class="reveal">Ressourcen</h2>
+            <ul class="resource-list reveal">
+                <li>
+                    <span class="resource-label">Karpathys CLAUDE.md installieren</span>
+                    <span class="resource-cmd">claude install-skill https://github.com/forrestchang/andrej-karpathy-skills</span>
+                </li>
+                <li>
+                    <span class="resource-label">Grill Me Skill (Ideen stresstesten)</span>
+                    <span class="resource-cmd">npx skills@latest add mattpocock/skills/grill-me</span>
+                </li>
+                <li>
+                    <span class="resource-label">Impeccable (Frontend Design Skills)</span>
+                    <span class="resource-cmd">npx skills add pbakaus/impeccable</span>
+                </li>
+                <li>
+                    <span class="resource-label">Last 30 Days (recherchiert Reddit, X, YouTube, HN zu jedem Thema)</span>
+                    <span class="resource-cmd">/plugin marketplace add mvanhorn/last30days-skill</span>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">15 / 16</div>
+    </section>
+
+    <!-- ===========================================
+         FOLIE 16: HACKATHON-SPICKZETTEL
+         =========================================== -->
+    <section class="slide" data-slide="16">
+        <div class="geo-circle" style="top: clamp(3rem, 8vh, 6rem); left: clamp(3rem, 6vw, 6rem); width: clamp(50px, 7vw, 100px); height: clamp(50px, 7vw, 100px);"></div>
+        <div class="slide-content">
+            <p class="eyebrow reveal">Euer Spickzettel</p>
+            <h2 class="reveal">Drei Dinge, die ihr<br><em style="font-weight: 400;">heute noch tun solltet</em></h2>
+            <ul class="checklist reveal">
+                <li>
+                    <span class="check-num">1</span>
+                    <div class="check-content">
+                        <h3>CLAUDE.md anlegen, falls noch nicht vorhanden</h3>
+                        <p>Nutzt die Karpathy CLAUDE.md als Vorlage. Stack, Konventionen, Testbefehle rein. Sofort bessere Ergebnisse.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="check-num">2</span>
+                    <div class="check-content">
+                        <h3>Skills installieren und ausprobieren</h3>
+                        <p>Impeccable f&uuml;r Frontend, Grill Me zum Ideen stresstesten. Spart euch wiederkehrende Prompts.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="check-num">3</span>
+                    <div class="check-content">
+                        <h3>Mehrere Claude-Instanzen parallel nutzen</h3>
+                        <p>Kontext nicht &uuml;berladen. Immer nur ein Thema pro Instanz. Lieber drei fokussierte Sessions als eine chaotische.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="slide-counter">16 / 16</div>
+    </section>
+
+    </main>
+
+    <!-- ===========================================
+       JAVASCRIPT: PRESENTATION CONTROLLER
+       =========================================== -->
+    <script>
+        // === Menu (skeleton requirement) ===
+        var menuDropdown = document.getElementById('vizMenuDropdown');
+
+        function toggleMenu() {
+            if (menuDropdown) menuDropdown.classList.toggle('open');
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.viz-menu') && menuDropdown) {
+                menuDropdown.classList.remove('open');
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && menuDropdown) {
+                menuDropdown.classList.remove('open');
+            }
+        });
+
+        // === Download PNG ===
+        function downloadImage() {
+            var menu = document.querySelector('.viz-menu');
+            menu.style.display = 'none';
+            htmlToImage.toPng(document.body, { quality: 1, pixelRatio: 2, filter: function(n) { return !n.classList || !n.classList.contains('viz-menu'); } })
+            .then(function(url) {
+                var a = document.createElement('a'); a.href = url;
+                a.download = 'claude-code-presentation.png'; a.click();
+            })
+            .catch(function(e) { console.error('Download failed:', e); })
+            .finally(function() { menu.style.display = ''; });
+        }
+
+        // ===========================================
+        // SLIDE PRESENTATION CONTROLLER
+        // ===========================================
+        var slides = document.querySelectorAll('.slide');
+        var currentSlide = 0;
+        var isScrolling = false;
+        var progressBar = document.getElementById('progressBar');
+        var navDotsContainer = document.getElementById('navDots');
+
+        // --- Intersection Observer ---
+        var slideObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    var index = Array.from(slides).indexOf(entry.target);
+                    if (index !== -1) {
+                        currentSlide = index;
+                        updateProgressBar();
+                        updateNavDots();
+                        triggerSlideCharts(index);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+        slides.forEach(function(slide) { slideObserver.observe(slide); });
+
+        // --- Keyboard Nav ---
+        document.addEventListener('keydown', function(e) {
+            if (e.target.getAttribute('contenteditable')) return;
+            switch(e.key) {
+                case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                    e.preventDefault(); goToSlide(currentSlide + 1); break;
+                case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                    e.preventDefault(); goToSlide(currentSlide - 1); break;
+                case 'Home': e.preventDefault(); goToSlide(0); break;
+                case 'End': e.preventDefault(); goToSlide(slides.length - 1); break;
+            }
+        });
+
+        // --- Touch Nav ---
+        var startY = 0;
+        document.addEventListener('touchstart', function(e) { startY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', function(e) {
+            var diff = startY - e.changedTouches[0].clientY;
+            if (Math.abs(diff) > 50) goToSlide(currentSlide + (diff > 0 ? 1 : -1));
+        }, { passive: true });
+
+        // --- Wheel Nav ---
+        var wheelTimeout;
+        document.addEventListener('wheel', function(e) {
+            if (isScrolling) return;
+            clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(function() {
+                if (Math.abs(e.deltaY) > 30) {
+                    isScrolling = true;
+                    goToSlide(currentSlide + (e.deltaY > 0 ? 1 : -1));
+                    setTimeout(function() { isScrolling = false; }, 800);
+                }
+            }, 50);
+        }, { passive: true });
+
+        function goToSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+            currentSlide = index;
+            slides[index].scrollIntoView({ behavior: 'smooth' });
+            updateProgressBar();
+            updateNavDots();
+        }
+
+        function updateProgressBar() {
+            if (progressBar) progressBar.style.width = ((currentSlide + 1) / slides.length) * 100 + '%';
+        }
+
+        // --- Nav Dots ---
+        if (navDotsContainer) {
+            navDotsContainer.innerHTML = '';
+            slides.forEach(function(_, i) {
+                var dot = document.createElement('button');
+                dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Zu Folie ' + (i + 1));
+                dot.addEventListener('click', function() { goToSlide(i); });
+                navDotsContainer.appendChild(dot);
+            });
+        }
+        function updateNavDots() {
+            if (!navDotsContainer) return;
+            navDotsContainer.querySelectorAll('.nav-dot').forEach(function(dot, i) {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+
+        // ===========================================
+        // GAUGE ANIMATIONS (Slide 2)
+        // ===========================================
+        var gaugesAnimated = false;
+
+        function animateGauges() {
+            if (gaugesAnimated) return;
+            gaugesAnimated = true;
+
+            var fills = document.querySelectorAll('.gauge-fill');
+            fills.forEach(function(fill) {
+                var pct = parseFloat(fill.getAttribute('data-percent')) / 100;
+                var circumference = 2 * Math.PI * 45; // r=45
+                var offset = circumference * (1 - pct);
+                fill.style.strokeDashoffset = offset;
+                fill.classList.add('animated');
+            });
+
+            // Animate counter values
+            document.querySelectorAll('.gauge-value[data-count]').forEach(function(el) {
+                if (el.dataset.counted) return;
+                el.dataset.counted = '1';
+                var target = parseFloat(el.dataset.count);
+                var suffix = el.dataset.suffix || '';
+                var startTime = performance.now();
+                var duration = 1500;
+                (function tick(now) {
+                    var p = Math.min((now - startTime) / duration, 1);
+                    var eased = 1 - Math.pow(1 - p, 3);
+                    el.textContent = Math.round(target * eased) + suffix;
+                    if (p < 1) requestAnimationFrame(tick);
+                })(startTime);
+            });
+        }
+
+        // ===========================================
+        // CHART.JS — Glasswing Charts (Slide 4)
+        // ===========================================
+        var chartsBuilt = false;
+
+        function buildGlasswingCharts() {
+            if (chartsBuilt) return;
+            if (typeof Chart === 'undefined') { console.error('Chart.js not loaded'); return; }
+
+            var isDivider = true; // slide 4 is always dark bg
+            var textColor = 'rgba(245, 243, 238, 0.75)';
+            var textBold = 'rgba(245, 243, 238, 0.95)';
+            var gridColor = 'rgba(245, 243, 238, 0.06)';
+            var terracotta = '#c1664a';
+            var warm = '#e8d4c0';
+
+            // --- Bug Age Horizontal Bar ---
+            var bugCtx = document.getElementById('bugAgeChart');
+            if (bugCtx) {
+                bugCtx.setAttribute('role', 'img');
+                bugCtx.setAttribute('aria-label', 'Balkendiagramm: OpenBSD 27 Jahre, FFmpeg 16 Jahre');
+                new Chart(bugCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['OpenBSD', 'FFmpeg'],
+                        datasets: [{
+                            label: 'Jahre unentdeckt',
+                            data: [27, 16],
+                            backgroundColor: [terracotta, warm],
+                            borderColor: [terracotta, warm],
+                            borderWidth: 0,
+                            borderRadius: 3,
+                            barThickness: 28
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        layout: { padding: { top: 10, right: 20, bottom: 10, left: 10 } },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                padding: 12,
+                                cornerRadius: 4,
+                                titleFont: { family: "'Work Sans', sans-serif", size: 13 },
+                                bodyFont: { family: "'Work Sans', sans-serif", size: 12 },
+                                callbacks: {
+                                    label: function(ctx) { return ctx.raw + ' Jahre unentdeckt'; }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 30,
+                                ticks: {
+                                    color: textColor,
+                                    font: { family: "'Work Sans', sans-serif", size: 11 },
+                                    callback: function(v) { return v + ' J.'; },
+                                    maxTicksLimit: 4
+                                },
+                                grid: { color: gridColor }
+                            },
+                            y: {
+                                ticks: {
+                                    color: textBold,
+                                    font: { family: "'Fraunces', serif", size: 14, weight: 700 }
+                                },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // --- CTF Success Doughnut ---
+            var ctfCtx = document.getElementById('ctfChart');
+            if (ctfCtx) {
+                ctfCtx.setAttribute('role', 'img');
+                ctfCtx.setAttribute('aria-label', 'Kreisdiagramm: 73% Erfolgsquote bei CTF-Aufgaben');
+                new Chart(ctfCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Erfolg', 'Fehlgeschlagen'],
+                        datasets: [{
+                            data: [73, 27],
+                            backgroundColor: [terracotta, 'rgba(245, 243, 238, 0.08)'],
+                            borderColor: ['transparent', 'transparent'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        cutout: '72%',
+                        layout: { padding: 10 },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                padding: 12,
+                                cornerRadius: 4,
+                                titleFont: { family: "'Work Sans', sans-serif", size: 13 },
+                                bodyFont: { family: "'Work Sans', sans-serif", size: 12 },
+                                callbacks: {
+                                    label: function(ctx) { return ctx.label + ': ' + ctx.raw + '%'; }
+                                }
+                            }
+                        }
+                    },
+                    plugins: [{
+                        id: 'centerText',
+                        afterDraw: function(chart) {
+                            var ctx2 = chart.ctx;
+                            var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                            var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+
+                            ctx2.save();
+                            ctx2.textAlign = 'center';
+                            ctx2.textBaseline = 'middle';
+
+                            // Big number
+                            ctx2.font = '900 clamp(1.8rem, 3vw, 2.8rem) "Fraunces", serif';
+                            ctx2.font = '900 36px "Fraunces", serif';
+                            ctx2.fillStyle = textBold;
+                            ctx2.fillText('73%', centerX, centerY - 6);
+
+                            // Label
+                            ctx2.font = '500 11px "Work Sans", sans-serif';
+                            ctx2.fillStyle = textColor;
+                            ctx2.fillText('Erfolg', centerX, centerY + 18);
+
+                            ctx2.restore();
+                        }
+                    }]
+                });
+            }
+
+            chartsBuilt = true;
+        }
+
+        // --- Trigger charts when slide becomes visible ---
+        function triggerSlideCharts(index) {
+            // Slide 2 (index 1): gauges
+            if (index === 1) animateGauges();
+            // Slide 4 (index 3): Chart.js
+            if (index === 3) buildGlasswingCharts();
+        }
+
+        // ===========================================
+        // INLINE EDITOR
+        // ===========================================
+        var editIsActive = false;
+        var editToggle = document.getElementById('editToggle');
+        var editBanner = document.getElementById('editBanner');
+
+        function toggleEditMode() {
+            editIsActive = !editIsActive;
+            document.body.classList.toggle('edit-active', editIsActive);
+            editToggle.classList.toggle('active', editIsActive);
+            editBanner.classList.toggle('active', editIsActive);
+            editToggle.innerHTML = editIsActive ? '&#10003;' : '&#9998;';
+            var editableSelectors = 'h1, h2, h3, p, span, li span, .stat-number, .stat-label, .quote-text, .gauge-label, .chart-insight';
+            document.querySelectorAll(editableSelectors).forEach(function(el) {
+                if (editIsActive) el.setAttribute('contenteditable', 'true');
+                else el.removeAttribute('contenteditable');
+            });
+            if (!editIsActive) localStorage.setItem('presentation-content', document.body.innerHTML);
+        }
+
+        function exportFile() {
+            var editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+            editableEls.forEach(function(el) { el.removeAttribute('contenteditable'); });
+            document.body.classList.remove('edit-active');
+            editToggle.classList.remove('active', 'show');
+            editBanner.classList.remove('active', 'show');
+            var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            document.body.classList.add('edit-active');
+            editableEls.forEach(function(el) { el.setAttribute('contenteditable', 'true'); });
+            editToggle.classList.add('active');
+            editBanner.classList.add('active');
+            var blob = new Blob([html], { type: 'text/html' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'claude-code-presentation.html';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // Edit controls
+        editToggle.addEventListener('click', toggleEditMode);
+        var editHotzone = document.getElementById('editHotzone');
+        var hideTimeout = null;
+        editHotzone.addEventListener('mouseenter', function() { clearTimeout(hideTimeout); editToggle.classList.add('show'); });
+        editHotzone.addEventListener('mouseleave', function() { hideTimeout = setTimeout(function() { if (!editIsActive) editToggle.classList.remove('show'); }, 400); });
+        editToggle.addEventListener('mouseenter', function() { clearTimeout(hideTimeout); });
+        editToggle.addEventListener('mouseleave', function() { hideTimeout = setTimeout(function() { if (!editIsActive) editToggle.classList.remove('show'); }, 400); });
+        editHotzone.addEventListener('click', toggleEditMode);
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) toggleEditMode();
+            if (e.key === 's' && (e.ctrlKey || e.metaKey) && editIsActive) { e.preventDefault(); exportFile(); }
+        });
+
+        // Restore saved edits
+        var saved = localStorage.getItem('presentation-content');
+        if (saved) document.body.innerHTML = saved;
+
+        // Init
+        updateProgressBar();
+    </script>
+</body>
+</html>
